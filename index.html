@@ -1,0 +1,120 @@
+<!--
+  Copyright (c) 2025 Mehdi Dimyadi (https://github.com/MEHDIMYADI)
+  Project: Roozegaar Calendar (https://dimyadi.ir/roozegaar-calendar/)
+
+  If you use or get inspiration from this project,
+  please kindly mention my name or this project in your work.
+  It took a lot of effort to build, and I’d really appreciate your acknowledgment.
+
+  Licensed under no specific open-source license — all rights reserved unless stated otherwise.
+-->
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <!-- ======================= META TAGS & BASIC CONFIGURATION ======================= -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roozegaar Calendar</title>
+    
+    <!-- ======================= PWA CONFIGURATION ======================= -->
+    <meta name="theme-color" content="#4a6fa5">
+    <meta name="description" content="تقویم دو زبانه فارسی و میلادی با قابلیت مدیریت رویدادها - Bilingual Persian and Gregorian calendar with event management">
+    <meta name="keywords" content="تقویم, فارسی, میلادی, رویداد, calendar, persian, gregorian, events">
+    
+    <!-- Apple PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="تقویم من">
+    <link rel="apple-touch-icon" href="assets/images/icons/icon-192x192.png">
+    
+    <!-- Android PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- ======================= RESOURCE LINKS ======================= -->
+    <!-- Fallback favicon using emoji -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />        
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+    <!-- ======================= HEADER & NAVIGATION ======================= -->
+    <div id="header"></div>
+
+    <!-- ======================= MAIN CONTENT ======================= -->
+    <main class="container" role="main">
+        <div id="main-content"></div>
+
+        <!-- ======================= EVENT MODAL ======================= -->
+        <div class="modal" id="eventModal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle"></h3>
+                    <button class="close-modal" id="closeModal" aria-label="بستن پنجره رویداد">
+                        &times;
+                    </button>
+                </div>
+                
+                <!-- Event Form -->
+                <form class="event-form" id="eventForm" role="form" aria-labelledby="modalTitle">
+                    <!-- Event Title -->
+                    <div class="form-group">
+                        <label id="eventTitleLabel" for="eventTitle"></label>
+                        <input type="text" id="eventTitle" required aria-required="true">
+                    </div>
+                    
+                    <!-- Event Date (Read-only) -->
+                    <div class="form-group">
+                        <label id="eventDateLabel" for="eventDate"></label>
+                        <input type="text" id="eventDate" readonly aria-readonly="true">
+                    </div>
+                    
+                    <!-- Event Description -->
+                    <div class="form-group">
+                        <label id="eventDescriptionLabel" for="eventDescription"></label>
+                        <textarea id="eventDescription" rows="3" aria-describedby="eventDescriptionHelp"></textarea>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelEvent"></button>
+                        <button type="submit" class="btn btn-primary" id="submitEvent"></button>
+                    </div>
+                </form>
+                
+                <!-- Existing Events List -->
+                <div class="events-list" id="eventsList" aria-live="polite">
+                    <!-- Events will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ======================= PWA INSTALL PROMPT ======================= -->
+    <div class="pwa-install-prompt" id="pwaInstallPrompt" role="dialog" aria-labelledby="pwaPromptTitle" aria-hidden="true">
+        <div class="pwa-prompt-content">
+            <div class="pwa-prompt-text">
+                <span id="pwaPromptTitle"></span>
+                <span id="pwaPromptSubtitle"></span>
+            </div>
+            <div class="pwa-prompt-actions">
+                <button class="pwa-btn pwa-btn-secondary" id="pwaDismissBtn" aria-label="نصب را بعداً انجام بده">     
+                </button>
+                <button class="pwa-btn pwa-btn-primary" id="pwaInstallBtn" aria-label="نصب برنامه تقویم">
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================= FOOTER CONTENT ======================= -->
+    <div id="footer"></div>
+    
+    <!-- ======================= SCRIPTS ======================= -->
+    <script src="assets/js/jalaali.js"></script>
+    <script src="assets/js/main.js"></script>
+    
+    <!-- Hidden accessibility elements -->
+    <div id="sr-only" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+</body>
+</html>
