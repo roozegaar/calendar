@@ -386,6 +386,15 @@ nav {
     padding: 25px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.toggle-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .setting-group {
@@ -395,13 +404,9 @@ nav {
 }
 
 .setting-group:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-}
-
-.setting-group label {
-    font-weight: 600;
-    color: var(--text-color);
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
 }
 
 .setting-select {
