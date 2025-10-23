@@ -1625,9 +1625,13 @@ function updateCalendarHeader() {
     
     try {
         if (currentCalendar === 'persian') {
-            currentMonthYear.textContent = `${langData.months.fa[currentPersianDate.month - 1]} ${currentPersianDate.year}`;
+            const monthName = langData.months.fa[currentPersianDate.month - 1];
+            const year = formatNumber(currentPersianDate.year, currentLang);
+            currentMonthYear.textContent = `${monthName} ${year}`;
         } else {
-            currentMonthYear.textContent = `${langData.months.en[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+            const monthName = langData.months.en[currentDate.getMonth()];
+            const year = formatNumber(currentDate.getFullYear(), 'en');
+            currentMonthYear.textContent = `${monthName} ${year}`;
         }
         console.log('✅ Calendar header updated successfully');
     } catch (error) {
@@ -1725,7 +1729,14 @@ function createDayElement(year, month, day) {
 
     const primaryDate = document.createElement('div');
     primaryDate.classList.add('primary-date');
-    primaryDate.textContent = day;
+    
+    // Format primary date based on current language
+    if (currentCalendar === 'persian') {
+        primaryDate.textContent = formatNumber(day, currentLang);
+    } else {
+        primaryDate.textContent = formatNumber(day, 'en'); // Always use English digits for Gregorian
+    }
+    
     dayElement.appendChild(primaryDate);
 
     // Only show secondary date if enabled
@@ -1735,10 +1746,12 @@ function createDayElement(year, month, day) {
         
         if (currentCalendar === 'persian') {
             const gregDate = persianToGregorian({year: year, month: month, day});
-            secondaryDate.textContent = gregDate.getDate();
+            // For secondary Gregorian dates in Persian calendar, use English digits
+            secondaryDate.textContent = formatNumber(gregDate.getDate(), 'en');
         } else {
             const persDate = gregorianToPersian(new Date(year, month, day));
-            secondaryDate.textContent = persDate.day;
+            // For secondary Persian dates in Gregorian calendar, use Persian digits
+            secondaryDate.textContent = formatNumber(persDate.day, 'fa');
         }
         dayElement.appendChild(secondaryDate);
     }
@@ -1986,10 +1999,16 @@ function highlightToday() {
         
         dayElements.forEach(dayElement => {
             const primaryDate = dayElement.querySelector('.primary-date');
-            if (primaryDate && parseInt(primaryDate.textContent) === targetDay) {
-                // Additional check to ensure it's the correct month and not from other month
-                if (!dayElement.classList.contains('other-month')) {
-                    todayElement = dayElement;
+            if (primaryDate) {
+                // Get the numeric value (remove any formatting for comparison)
+                const dayText = primaryDate.textContent;
+                const numericValue = parseInt(dayText.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)));
+                
+                if (numericValue === targetDay) {
+                    // Additional check to ensure it's the correct month and not from other month
+                    if (!dayElement.classList.contains('other-month')) {
+                        todayElement = dayElement;
+                    }
                 }
             }
         });
@@ -2069,11 +2088,13 @@ function handleDayClick(dayElement, year, month, day) {
 function openEventModal(year, month, day) {
     const dateKey = getDateKey(year, month, day);
     
-    // Update date display
+    // Update date display with proper number formatting
     if (currentCalendar === 'persian') {
-        eventDate.value = `${year}/${month}/${day} (${langData.months.fa[month-1]})`;
+        const formattedDate = `${formatNumber(year, currentLang)}/${formatNumber(month, currentLang)}/${formatNumber(day, currentLang)} (${langData.months.fa[month-1]})`;
+        eventDate.value = formattedDate;
     } else {
-        eventDate.value = `${langData.months.en[month]} ${day}, ${year}`;
+        const formattedDate = `${langData.months.en[month]} ${formatNumber(day, 'en')}, ${formatNumber(year, 'en')}`;
+        eventDate.value = formattedDate;
     }
     
     modalTitle.textContent = langData.ui.addEvent;
@@ -2305,7 +2326,9 @@ function updatePersianCard() {
     if (persianDay && persianMonth && persianFullDate) {
         persianDay.textContent = currentPersianDate.day;
         persianMonth.textContent = langData.months.fa[currentPersianDate.month - 1];
-        persianFullDate.textContent = `${currentPersianDate.year}/${String(currentPersianDate.month).padStart(2,'0')}/${String(currentPersianDate.day).padStart(2,'0')}`;
+        
+        const formattedDate = `${formatNumber(currentPersianDate.year, currentLang)}/${formatNumber(String(currentPersianDate.month).padStart(2,'0'), currentLang)}/${formatNumber(String(currentPersianDate.day).padStart(2,'0'), currentLang)}`;
+        persianFullDate.textContent = formattedDate;
     }
 }
 
@@ -2315,9 +2338,11 @@ function updatePersianCard() {
 function updateGregorianCard() {
     if (gregorianDay && gregorianMonth && gregorianFullDate) {
         const gDate = persianToGregorian(currentPersianDate);
-        gregorianDay.textContent = gDate.getDate();
+        gregorianDay.textContent = formatNumber(gDate.getDate(), 'en'); // Always English for Gregorian
         gregorianMonth.textContent = langData.months.en[gDate.getMonth()];
-        gregorianFullDate.textContent = `${gDate.getFullYear()}/${String(gDate.getMonth()+1).padStart(2,'0')}/${String(gDate.getDate()).padStart(2,'0')}`;
+        
+        const formattedDate = `${formatNumber(gDate.getFullYear(), 'en')}/${formatNumber(String(gDate.getMonth()+1).padStart(2,'0'), 'en')}/${formatNumber(String(gDate.getDate()).padStart(2,'0'), 'en')}`;
+        gregorianFullDate.textContent = formattedDate;
     }
 }
 
@@ -2725,6 +2750,57 @@ function switchCalendar(type) {
     renderDays();
     calendarCards();
     highlightToday();
+}
+
+// ======================= NUMBER FORMATTING =======================
+/**
+ * Formats numbers based on current language
+ * @param {number|string} number - Number to format
+ * @param {string} lang - Language code ('fa' or 'en')
+ * @returns {string} Formatted number
+ */
+function formatNumber(number, lang = currentLang) {
+    const num = parseInt(number);
+    if (isNaN(num)) return number;
+    
+    if (lang === 'fa') {
+        // Convert to Persian digits without separators
+        return num.toString().replace(/\d/g, d => 
+            ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'][d]
+        );
+    } else {
+        // Keep as Western digits without separators
+        return num.toString();
+    }
+}
+
+/**
+ * Formats a single digit based on current language
+ * @param {string} digit - Single digit (0-9)
+ * @param {string} lang - Language code ('fa' or 'en')
+ * @returns {string} Formatted digit
+ */
+function formatDigit(digit, lang = currentLang) {
+    if (lang === 'fa') {
+        const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        return persianDigits[parseInt(digit)] || digit;
+    }
+    return digit;
+}
+
+/**
+ * Formats all numbers in a string based on current language
+ * @param {string} text - Text containing numbers
+ * @param {string} lang - Language code ('fa' or 'en')
+ * @returns {string} Text with formatted numbers
+ */
+function formatNumbersInText(text, lang = currentLang) {
+    if (lang === 'fa') {
+        return text.replace(/\d+/g, match => 
+            match.split('').map(d => formatDigit(d, lang)).join('')
+        );
+    }
+    return text;
 }
 
 // ======================= PWA FUNCTIONALITY =======================

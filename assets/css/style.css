@@ -71,6 +71,19 @@ body {
     padding-top: 60px;
 }
 
+.persian-digits {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    direction: ltr;
+    display: inline-block;
+}
+
+/* Ensure proper rendering of mixed text */
+[dir="rtl"] .primary-date,
+[dir="rtl"] .secondary-date,
+[dir="rtl"] .calendar-card .date-day {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
 /* ======================= HEADER & NAVIGATION ======================= */
 
 header {
