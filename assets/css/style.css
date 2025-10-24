@@ -25,6 +25,9 @@
     --footer-bg: #fff;
     --footer-text: #333;
     --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    --scrollbar-track: #f1f1f1;
+    --scrollbar-thumb: #c1c1c1;
+    --scrollbar-thumb-hover: #a8a8a8;
 }
 
 [data-theme="dark"] {
@@ -41,6 +44,9 @@
     --footer-bg: #2d2d2d;
     --footer-text: #f0f0f0;
     --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    --scrollbar-track: #2d2d2d;
+    --scrollbar-thumb: #555;
+    --scrollbar-thumb-hover: #666;
 }
 
 /* ======================= BASE STYLES ======================= */
@@ -826,6 +832,322 @@ nav {
 
 .faq-no-results.show {
     display: block;
+}
+
+/* ======================= API EVENTS STYLES ======================= */
+.api-calendar-card {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    min-height: 120px;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: var(--text-color);
+}
+.api-events-section {
+    overflow: hidden;
+}
+
+.api-events-section-header {
+    background: var(--primary-color);
+    color: white;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.api-events-section-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+
+.api-tabs-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.api-tabs-content::-webkit-scrollbar-track {
+    background: var(--scrollbar-track, #f1f1f1);
+    border-radius: 3px;
+}
+
+.api-tabs-content::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb, #c1c1c1);
+    border-radius: 3px;
+}
+
+.api-tabs-content::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover, #a8a8a8);
+}
+
+.api-tabs-content {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb, #c1c1c1) var(--scrollbar-track, #f1f1f1);
+}
+
+.api-events-count {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+.api-event-item {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s ease;
+}
+
+.api-event-item:last-child {
+    border-bottom: none;
+}
+
+.api-event-item:hover {
+    background: var(--hover-color);
+}
+
+.api-event-item.holiday {
+    background: rgba(244, 67, 54, 0.1);
+    border-left: 4px solid #f44336;
+}
+
+.api-event-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    line-height: 1.4;
+}
+
+.api-event-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+}
+
+.api-event-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+}
+
+.api-event-day {
+    background: var(--primary-light);
+    color: var(--primary-color);
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.api-event-type {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.api-event-type.holiday {
+    background: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+}
+
+.api-event-type:not(.holiday) {
+    background: rgba(33, 150, 243, 0.1);
+    color: #2196f3;
+}
+
+/* ======================= API EVENTS TABS STYLES ======================= */
+.api-events-tabs {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 400px; /* Fixed height for the entire component */
+    border-radius: 8px;
+    background: var(--day-bg);
+}
+
+.api-tabs-header {
+    display: flex;
+    background: var(--header-bg);
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+.api-tab {
+    flex: 1;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    position: relative;
+}
+
+.api-tab:hover {
+    background: var(--hover-color);
+}
+
+.api-tab.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.api-tabs-content-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Hide overflow */
+    min-height: 0; /* Allow shrinking */
+}
+
+.api-tab-pane {
+    display: none;
+    flex: 1;
+    overflow-y: auto; /* Enable vertical scrolling only for content */
+    padding: 0;
+}
+
+.api-tab-pane.active {
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Scrollbar styles for tab content */
+.api-tab-pane::-webkit-scrollbar {
+    width: 6px;
+}
+
+.api-tab-pane::-webkit-scrollbar-track {
+    background: var(--scrollbar-track, #f1f1f1);
+    border-radius: 3px;
+}
+
+.api-tab-pane::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb, #c1c1c1);
+    border-radius: 3px;
+}
+
+.api-tab-pane::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover, #a8a8a8);
+}
+
+.api-tab-pane {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb, #c1c1c1) var(--scrollbar-track, #f1f1f1);
+}
+
+.api-events-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.api-events-container-inner {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb, #c1c1c1) var(--scrollbar-track, #f1f1f1);    
+}
+
+/* Scrollbar for events container */
+.api-events-container-inner::-webkit-scrollbar {
+    width: 6px;
+}
+
+.api-events-container-inner::-webkit-scrollbar-track {
+    background: var(--scrollbar-track, #f1f1f1);
+    border-radius: 3px;
+}
+
+.api-events-container-inner::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb, #c1c1c1);
+    border-radius: 3px;
+}
+
+.api-events-container-inner::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover, #a8a8a8);
+}
+
+.api-event-item:last-child {
+    border-bottom: none;
+}
+
+.api-event-item:hover {
+    background: var(--hover-color);
+}
+
+.api-event-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    line-height: 1.4;
+}
+
+.api-event-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+}
+
+.api-event-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+}
+
+.api-event-day {
+    background: var(--primary-light);
+    color: var(--primary-color);
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.api-event-type {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.api-event-type.holiday {
+    background: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+}
+
+.api-event-type:not(.holiday) {
+    background: rgba(33, 150, 243, 0.1);
+    color: #2196f3;
+}
+
+.api-tabs-content-wrapper.single-tab {
+    border: none;
+    border-radius: 0;
+}
+
+.api-tabs-content-wrapper.single-tab .api-tab-pane {
+    padding: 0;
+}
+
+#apiEventsCard[style*="display: none"] {
+    display: none !important;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 /* ======================= ABOUT PAGE STYLES ======================= */

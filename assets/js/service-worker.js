@@ -29,6 +29,7 @@ const urlsToCache = [
     `${BASE_PATH}/assets/css/style.css`,
     `${BASE_PATH}/assets/js/main.js`,
     `${BASE_PATH}/assets/js/jalaali.js`,
+	`${BASE_PATH}/assets/js/calendar-api.js`,
     `${BASE_PATH}/assets/data/manifest-en.json`,
     `${BASE_PATH}/assets/data/manifest-fa.json`,
     `${BASE_PATH}/assets/lang/fa.json`,

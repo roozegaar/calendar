@@ -21,6 +21,9 @@
     "themeSetToLight": "Light theme activated",
     "themeSetToDark": "Dark theme activated",
     "langToggle": "Language",
+    "showApiEvents": "Show API Events",
+    "apiEventsCalendar": "API Events Calendar", 
+    "bothCalendars": "Both Calendars",      
     "addEvent": "Add Event",
     "eventTitleLabel": "Event title",
     "eventDateLabel": "Event date",
@@ -30,7 +33,7 @@
     "cancel": "Cancel",
     "addEvent": "Add event",
     "enterEventTitle": "Please enter event title",
-    "noEvents": "No events for this date",
+    "noPersonalEvents": "No Personal events for this date",
     "eventDeleted": "Event deleted successfully",
     "delete": "Delete",
     "submit": "Save",
@@ -72,6 +75,10 @@
         "fa": ["Farvardin", "Ordibehesht", "Khordad", "Tir", "Mordad", "Shahrivar", "Mehr", "Aban", "Azar", "Dey", "Bahman", "Esfand"],
         "en": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     },
+  "apiMonths": {
+    "persian": ["Farvardin", "Ordibehesht", "Khordad", "Tir", "Mordad", "Shahrivar", "Mehr", "Aban", "Azar", "Dey", "Bahman", "Esfand"],
+    "gregorian": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  },
     "weekdays": {
         "fa": ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"],
         "en": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]

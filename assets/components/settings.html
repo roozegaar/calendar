@@ -51,6 +51,29 @@
                 <label for="secondaryCalendarToggle" class="toggle-slider"></label>
             </div>
         </div>
+        
+        <!-- Show API Events -->
+        <div class="setting-group toggle-group">
+            <label for="apiEventsToggle" data-lang-key="showApiEvents">
+                نمایش رویدادهای API
+            </label>
+            <div class="toggle-switch">
+                <input type="checkbox" id="apiEventsToggle" class="setting-toggle">
+                <label for="apiEventsToggle" class="toggle-slider"></label>
+            </div>
+        </div>
+        
+        <!-- API Events Calendar Selection -->
+        <div class="setting-group">
+            <label for="apiEventsCalendarSelect" data-lang-key="apiEventsCalendar">
+                تقویم رویدادهای API
+            </label>
+            <select id="apiEventsCalendarSelect" class="setting-select">
+                <option value="both" data-lang-key="bothCalendars">هر دو تقویم</option>
+                <option value="persian" data-lang-key="persian">شمسی</option>
+                <option value="gregorian" data-lang-key="gregorian">میلادی</option>
+            </select>
+        </div>        
 
         <!-- Reset Settings -->
         <div class="setting-group">
