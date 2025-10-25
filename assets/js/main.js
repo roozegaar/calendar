@@ -2412,7 +2412,7 @@ function calendarCards() {
  */
 function updatePersianCard() {
     if (persianDay && persianMonth && persianFullDate) {
-        persianDay.textContent = currentPersianDate.day;
+        persianDay.textContent = formatNumber(currentPersianDate.day, currentLang);
         persianMonth.textContent = langData.months.fa[currentPersianDate.month - 1];
         
         const formattedDate = `${formatNumber(currentPersianDate.year, currentLang)}/${formatNumber(String(currentPersianDate.month).padStart(2,'0'), currentLang)}/${formatNumber(String(currentPersianDate.day).padStart(2,'0'), currentLang)}`;
