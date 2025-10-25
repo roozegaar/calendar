@@ -371,13 +371,14 @@ nav {
 .day-large {
     font-size: 3rem;
     font-weight: bold;
-    margin-bottom: 10px;
+    padding: 1rem;
+    line-height: 0;
     color: var(--text-color);
 }
 
 .month-name {
     font-size: 1.5rem;
-    margin-bottom: 5px;
+    padding: 1rem;
     color: var(--text-color);
 }
 
@@ -385,6 +386,7 @@ nav {
     font-size: 1rem;
     opacity: 0.7;
     color: var(--text-color);
+    line-height: 0;
 }
 
 .wide-calendar-card {
