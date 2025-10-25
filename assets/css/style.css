@@ -461,12 +461,11 @@ nav {
 .setting-select {
     width: 100%;
     margin-top: 10px;
-    padding: 12px 15px;
+    padding: 1rem;
     border: 2px solid var(--border-color);
     border-radius: 8px;
     background: var(--day-bg);
     color: var(--text-color);
-    font-size: 1rem;
     transition: border-color 0.3s ease;
     appearance: none;
     -webkit-appearance: none;
