@@ -2136,6 +2136,10 @@ body.offline-page main:not(.offline-container) {
         font-size: 1rem;
     }
 
+    .api-events-count {
+        font-size: 0.65rem;
+    }
+    
     .secondary-date {
         font-size: 0.7rem;
     }
