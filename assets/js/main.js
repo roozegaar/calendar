@@ -2987,8 +2987,8 @@ function createApiEventsSection(eventsData, calendarTitle, rangeInfoText = '') {
         </div>
         <div class="meta-right">
             <span class="api-events-count">${formattedCount} ${currentLang === 'fa' ? 'رویداد' : 'events'}</span>
-            <span class="api-events-count">${formattedFixed} ${currentLang === 'fa' ? 'رویداد ثابت' : 'fixed events'}</span>
-            <span class="api-events-count">${formattedFloating} ${currentLang === 'fa' ? 'رویداد نامنظم' : 'irregular events'}</span>
+            <span class="api-events-count">${formattedFixed} ${currentLang === 'fa' ? 'ثابت' : 'fixed'}</span>
+            <span class="api-events-count">${formattedFloating} ${currentLang === 'fa' ? 'نامنظم' : 'irregular'}</span>
         </div>
     `;
 
