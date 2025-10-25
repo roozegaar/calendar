@@ -930,13 +930,6 @@ nav {
     line-height: 1.4;
 }
 
-.api-event-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.8rem;
-}
-
 .api-event-day {
     background: var(--primary-light);
     color: var(--primary-color);
@@ -1102,10 +1095,17 @@ nav {
 }
 
 .api-event-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.meta-right {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
 }
 
 .api-event-day {
@@ -2394,7 +2394,6 @@ select:focus,
 input:focus,
 textarea:focus {
     outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
 }
 
 @media (prefers-contrast: high) {

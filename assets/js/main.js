@@ -2894,14 +2894,18 @@ function createApiEventsSection(eventsData, isMain) {
     const header = document.createElement('div');
     header.className = 'api-events-section-header';
     
-    const formattedCount = formatNumber(eventsData.total_events, currentLang);
+    const formattedCount = formatNumber(eventsData.total_events || 0, currentLang);
+    const fixedCount = formatNumber(eventsData.fixed_events_count || 0, currentLang);
+    const floatingCount = formatNumber(eventsData.floating_events_count || 0, currentLang);
 
     header.innerHTML = `
         <div>
             <h4>${calendarTitle}</h4>
             <small style="opacity: 0.9;">${calendarSubtitle}</small>
         </div>
-        <span class="api-events-count">${formattedCount} ${currentLang === 'fa' ? 'رویداد' : 'events'}</span>
+        <div class="meta-right"><span class="api-events-count">${formattedCount} ${currentLang === 'fa' ? 'رویداد' : 'events'}</span>
+        <span class="api-events-count">${fixedCount} ${currentLang === 'fa' ? 'رویداد ثابت' : 'fixed events'}</span>
+        <span class="api-events-count">${floatingCount} ${currentLang === 'fa' ? 'رویداد نامنظم' : 'irregular events'}</span></div>
     `;
 
     section.appendChild(header);
@@ -2940,37 +2944,28 @@ function createApiEventsSection(eventsData, isMain) {
  * @param {string} calendarType - Calendar type
  * @returns {HTMLElement} Event element
  */
-/**
- * Creates API event element
- * @param {Object} event - Event object
- * @param {string} day - Day number
- * @param {string} calendarType - Calendar type
- * @returns {HTMLElement} Event element
- */
 function createApiEventElement(event, day, calendarType) {
     const eventElement = document.createElement('div');
     eventElement.className = `api-event-item ${event.is_holiday ? 'holiday' : ''}`;
     
     const formattedDay = formatNumber(day, currentLang);
     
-    // Get month name for API events - fallback to current month if event.month doesn't exist
+    // Get month name for API events
     let monthName = '';
     let monthIndex;
     
-    // Determine month index - use event.month if available, otherwise use current month
+    // Determine month index
     if (event.month && !isNaN(event.month)) {
         monthIndex = event.month - 1;
     } else {
-        // Fallback to current month based on calendar type
         monthIndex = calendarType === 'persian' 
             ? currentPersianDate.month - 1 
             : currentDate.getMonth();
     }
     
-    // Ensure monthIndex is within valid range
     monthIndex = Math.max(0, Math.min(11, monthIndex));
     
-    // Get month name from apiMonths or fallback to months
+    // Get month name
     if (calendarType === 'persian') {
         monthName = (langData.apiMonths && langData.apiMonths.persian) 
             ? langData.apiMonths.persian[monthIndex]
@@ -3011,13 +3006,32 @@ function createApiEventElement(event, day, calendarType) {
     }
 
     const type = document.createElement('span');
-    type.className = `api-event-type ${event.is_holiday ? 'holiday' : ''}`;
-    type.textContent = event.is_holiday ? 
-        (currentLang === 'fa' ? 'تعطیل' : 'Holiday') : 
-        (currentLang === 'fa' ? 'مناسبت' : 'Event');
+    type.className = 'api-event-type';
+    type.textContent = currentLang === 'fa' ? 'مناسبت' : 'Event';
+
+    const eventTypeSpan = document.createElement('span');
+    eventTypeSpan.className = 'api-event-type';
+    eventTypeSpan.textContent = event.type === 'floating'
+        ? (currentLang === 'fa' ? 'نامنظم' : 'Irregular')
+        : (currentLang === 'fa' ? 'ثابت' : 'Fixed');
+
+    const holidaySpan = document.createElement('span');
+    holidaySpan.className = `api-event-type ${event.is_holiday ? 'holiday' : ''}`;
+    holidaySpan.textContent = event.is_holiday
+        ? (currentLang === 'fa' ? 'تعطیل' : 'Holiday')
+        : (currentLang === 'fa' ? 'غیرتعطیل' : 'Non-Holiday');
+
+    const rightGroup = document.createElement('div');
+    rightGroup.className = 'meta-right';
+    rightGroup.appendChild(type);
+    rightGroup.appendChild(eventTypeSpan);
+    rightGroup.appendChild(holidaySpan);
+
+    meta.setAttribute('dir', currentLang === 'fa' ? 'rtl' : 'ltr');
 
     meta.appendChild(dayInfo);
-    meta.appendChild(type);
+    meta.appendChild(rightGroup);
+
 
     eventElement.appendChild(title);
     eventElement.appendChild(description);
