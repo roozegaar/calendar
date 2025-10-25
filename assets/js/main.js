@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2025 Mehdi Dimyadi (https://github.com/MEHDIMYADI)
- * Project: Roozegaar Calendar (https://dimyadi.ir/roozegaar-calendar/)
+ * Project: Roozegaar Calendar (https://roozegaar.ir/)
  *
  * If you use or get inspiration from this project,
  * please kindly mention my name or this project in your work.
@@ -112,7 +112,7 @@ function initializeApp() {
 }
 
 // ======================= BASE URL CONFIG =======================
-const BASE_PATH = `${window.location.origin}/roozegaar-calendar`;
+const BASE_PATH = `${window.location.origin}/calendar`;
 
 // ======================= STATE MANAGEMENT =======================
 let events = JSON.parse(localStorage.getItem('calendarEvents')) || {};
@@ -131,6 +131,7 @@ let clickTimer;
 const longPressDuration = 500;
 let selectedDayElement = null;
 let currentPage = 'calendar'; 
+let eventsToShow = null;
 
 // ======================= DOM ELEMENTS =======================
 let persianDay, persianMonth, persianFullDate;
@@ -2788,7 +2789,14 @@ async function loadApiEvents() {
     createApiEventsTabs();
 
     try {
+        console.log('📅 Fetching API events...');
         const eventsData = await calendarAPI.getCurrentMonthEvents();
+        console.log('📅 API events received:', eventsData);
+        
+        if (!eventsData || !eventsData.main || !eventsData.secondary) {
+            throw new Error('Invalid API response structure');
+        }
+        
         const processedEvents = await processApiEvents(eventsData);
         
         // Cache the API events
@@ -2802,7 +2810,13 @@ async function loadApiEvents() {
         console.error('❌ Error loading API events:', error);
         const activeTabPane = document.getElementById(`${activeApiEventsTab}EventsTab`);
         if (activeTabPane) {
-            activeTabPane.innerHTML = '<div class="no-api-events">خطا در بارگذاری رویدادها</div>';
+            activeTabPane.innerHTML = `
+                <div class="no-api-events" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                    <p>${currentLang === 'fa' ? 'خطا در بارگذاری رویدادها' : 'Error loading events'}</p>
+                    <small style="opacity: 0.7;">${error.message}</small>
+                </div>
+            `;
         }
     }
 }
@@ -2832,80 +2846,150 @@ function updateApiEventsSectionVisibility() {
 }
 
 /**
- * Processes API events to remove duplicates
+ * Processes API events to handle both events_by_day and events_by_month formats
  */
 async function processApiEvents(eventsData) {
     const uniqueEvents = {
-        main: { ...eventsData.main, events_by_day: {} },
-        secondary: { ...eventsData.secondary, events_by_day: {} }
+        main: { ...eventsData.main },
+        secondary: { ...eventsData.secondary }
     };
 
-    // Remove duplicate events from main calendar
-    const mainSeen = new Set();
-    Object.keys(eventsData.main.events_by_day).forEach(day => {
-        uniqueEvents.main.events_by_day[day] = eventsData.main.events_by_day[day].filter(event => {
-            const eventKey = `${event.title}-${event.description}`;
-            if (!mainSeen.has(eventKey)) {
-                mainSeen.add(eventKey);
-                return true;
-            }
-            return false;
-        });
-    });
+    // Process main calendar events
+    if (eventsData.main.events_by_month && !eventsData.main.events_by_day) {
+        uniqueEvents.main.events_by_day = convertEventsByMonthToByDay(eventsData.main.events_by_month);
+    } else if (eventsData.main.events_by_day) {
+        uniqueEvents.main.events_by_day = removeDuplicateEvents(eventsData.main.events_by_day);
+    } else {
+        uniqueEvents.main.events_by_day = {};
+    }
 
-    // Remove duplicate events from secondary calendar
-    const secondarySeen = new Set();
-    Object.keys(eventsData.secondary.events_by_day).forEach(day => {
-        uniqueEvents.secondary.events_by_day[day] = eventsData.secondary.events_by_day[day].filter(event => {
-            const eventKey = `${event.title}-${event.description}`;
-            if (!secondarySeen.has(eventKey)) {
-                secondarySeen.add(eventKey);
-                return true;
-            }
-            return false;
-        });
-    });
+    // Process secondary calendar events
+    if (eventsData.secondary.events_by_month && !eventsData.secondary.events_by_day) {
+        uniqueEvents.secondary.events_by_day = convertEventsByMonthToByDay(eventsData.secondary.events_by_month);
+    } else if (eventsData.secondary.events_by_day) {
+        uniqueEvents.secondary.events_by_day = removeDuplicateEvents(eventsData.secondary.events_by_day);
+    } else {
+        uniqueEvents.secondary.events_by_day = {};
+    }
 
     return uniqueEvents;
 }
 
 /**
+ * Converts events_by_month format to events_by_day format with proper numeric ordering
+ * @param {Object} eventsByMonth - Events organized by month
+ * @returns {Object} Events organized by day in "M/D" format
+ */
+function convertEventsByMonthToByDay(eventsByMonth) {
+    const eventsByDay = {};
+
+    if (!eventsByMonth || typeof eventsByMonth !== 'object') {
+        return eventsByDay;
+    }
+
+    // Sort months numerically
+    const sortedMonths = Object.keys(eventsByMonth)
+        .map(Number)
+        .sort((a, b) => a - b);
+
+    sortedMonths.forEach(month => {
+        const monthEvents = eventsByMonth[month];
+        if (monthEvents && typeof monthEvents === 'object') {
+            // Sort days numerically within each month
+            const sortedDays = Object.keys(monthEvents)
+                .map(Number)
+                .sort((a, b) => a - b);
+
+            sortedDays.forEach(day => {
+                const dayEvents = monthEvents[day];
+                if (Array.isArray(dayEvents)) {
+                    const dateKey = `${month}/${day}`; // Unique key
+                    const eventsWithMeta = dayEvents.map(event => ({
+                        ...event,
+                        month,
+                        day
+                    }));
+                    eventsByDay[dateKey] = eventsWithMeta;
+                }
+            });
+        }
+    });
+
+    return eventsByDay;
+}
+
+/**
+ * Removes duplicate events from events_by_day object
+ * @param {Object} eventsByDay - Events organized by day
+ * @returns {Object} Events with duplicates removed
+ */
+function removeDuplicateEvents(eventsByDay) {
+    const seen = new Set();
+    const uniqueEventsByDay = {};
+    
+    if (!eventsByDay || typeof eventsByDay !== 'object') {
+        return uniqueEventsByDay;
+    }
+
+    Object.keys(eventsByDay).forEach(day => {
+        const dayEvents = eventsByDay[day];
+        if (Array.isArray(dayEvents)) {
+            uniqueEventsByDay[day] = dayEvents.filter(event => {
+                const eventKey = `${event.title}-${event.description}-${event.type}-${event.is_holiday}`;
+                if (!seen.has(eventKey)) {
+                    seen.add(eventKey);
+                    return true;
+                }
+                return false;
+            });
+        }
+    });
+
+    return uniqueEventsByDay;
+}
+
+/**
  * Creates API events section
  * @param {Object} eventsData - Events data
- * @param {boolean} isMain - Whether this is the main calendar
+ * @param {string} calendarTitle - Calendar title
+ * @param {string} rangeInfoText - Range information text (optional)
  * @returns {HTMLElement} Events section element
  */
-function createApiEventsSection(eventsData, isMain) {
+function createApiEventsSection(eventsData, calendarTitle, rangeInfoText = '') {
     const section = document.createElement('div');
     section.className = 'api-events-section';
-
-    // Determine calendar title based on type and language
-    let calendarTitle = '';
-    let calendarSubtitle = '';
-    
-    if (eventsData.calendar === 'persian') {
-        calendarTitle = currentLang === 'fa' ? 'تقویم فارسی' : 'Persian Calendar';
-        calendarSubtitle = isMain;
-    } else {
-        calendarTitle = currentLang === 'fa' ? 'تقویم میلادی' : 'Gregorian Calendar';
-        calendarSubtitle = isMain;
-    }
 
     const header = document.createElement('div');
     header.className = 'api-events-section-header';
     
-    const formattedCount = formatNumber(eventsData.total_events || 0, currentLang);
-    const fixedCount = formatNumber(eventsData.fixed_events_count || 0, currentLang);
-    const floatingCount = formatNumber(eventsData.floating_events_count || 0, currentLang);
+    const totalEvents = eventsData.total_events || 0;
+    const fixedCount = eventsData.fixed_events_count || 0;
+    const floatingCount = eventsData.floating_events_count || 0;
+    
+    const calendarType = eventsData.calendar || 'persian';
+    const calendarName = calendarType === 'persian' 
+        ? (currentLang === 'fa' ? 'تقویم فارسی' : 'Persian Calendar')
+        : (currentLang === 'fa' ? 'تقویم میلادی' : 'Gregorian Calendar');
+
+    const formattedCount = formatNumber(totalEvents, currentLang);
+    const formattedFixed = formatNumber(fixedCount, currentLang);
+    const formattedFloating = formatNumber(floatingCount, currentLang);
 
     header.innerHTML = `
         <div>
-            <h4>${calendarTitle}</h4>
-            <small style="opacity: 0.9;">${calendarSubtitle}</small>
+            <h4>${calendarName}</h4>
+            <small style="opacity: 0.9;">${calendarTitle}</small>
+            ${rangeInfoText ? `
+                <div class="api-events-range-info" style="font-size: 0.6rem; opacity: 0.9;">
+                    ${rangeInfoText}
+                </div>
+            ` : ''}
         </div>
-        <div class="meta-right"><span class="api-events-count">${formattedCount} ${currentLang === 'fa' ? 'رویداد' : 'events'}</span>
-        <span class="api-events-count">${fixedCount} ${currentLang === 'fa' ? 'رویداد ثابت' : 'fixed events'}</span>
-        <span class="api-events-count">${floatingCount} ${currentLang === 'fa' ? 'رویداد نامنظم' : 'irregular events'}</span></div>
+        <div class="meta-right">
+            <span class="api-events-count">${formattedCount} ${currentLang === 'fa' ? 'رویداد' : 'events'}</span>
+            <span class="api-events-count">${formattedFixed} ${currentLang === 'fa' ? 'رویداد ثابت' : 'fixed events'}</span>
+            <span class="api-events-count">${formattedFloating} ${currentLang === 'fa' ? 'رویداد نامنظم' : 'irregular events'}</span>
+        </div>
     `;
 
     section.appendChild(header);
@@ -2913,25 +2997,41 @@ function createApiEventsSection(eventsData, isMain) {
     const eventsContainer = document.createElement('div');
     eventsContainer.className = 'api-events-container-inner';
 
-    // Add events for each day, sorted by day
-    const sortedDays = Object.keys(eventsData.events_by_day).sort((a, b) => parseInt(a) - parseInt(b));
-    
-    sortedDays.forEach(day => {
-        const dayEvents = eventsData.events_by_day[day];
-        
-        // Sort events by priority (if available) or title
-        const sortedEvents = dayEvents.sort((a, b) => {
-            if (a.priority && b.priority) {
-                return a.priority - b.priority;
-            }
-            return a.title.localeCompare(b.title);
-        });
+    // Use events_by_day that was processed in processApiEvents
+    const eventsByDay = eventsData.events_by_day || {};
 
-        sortedEvents.forEach(event => {
-            const eventElement = createApiEventElement(event, day, eventsData.calendar);
-            eventsContainer.appendChild(eventElement);
+    // Add events for each day, sorted by day
+    if (Object.keys(eventsByDay).length > 0) {
+        // Sort days numerically
+        const sortedDays = Object.keys(eventsByDay).sort((a, b) => parseInt(a) - parseInt(b));
+        
+        sortedDays.forEach(day => {
+            const dayEvents = eventsByDay[day];
+            
+            if (Array.isArray(dayEvents) && dayEvents.length > 0) {
+                // Sort events by priority (if available) or title
+                const sortedEvents = dayEvents.sort((a, b) => {
+                    if (a.priority && b.priority) {
+                        return a.priority - b.priority;
+                    }
+                    return a.title.localeCompare(b.title);
+                });
+
+                sortedEvents.forEach(event => {
+                    const eventElement = createApiEventElement(event, day, calendarType);
+                    eventsContainer.appendChild(eventElement);
+                });
+            }
         });
-    });
+    } else {
+        const noEvents = document.createElement('div');
+        noEvents.className = 'no-api-events';
+        noEvents.textContent = currentLang === 'fa' ? 'هیچ رویدادی برای این بازه زمانی وجود ندارد' : 'No events found for this date range';
+        noEvents.style.textAlign = 'center';
+        noEvents.style.padding = '2rem';
+        noEvents.style.color = 'var(--text-secondary)';
+        eventsContainer.appendChild(noEvents);
+    }
 
     section.appendChild(eventsContainer);
     return section;
@@ -2950,11 +3050,11 @@ function createApiEventElement(event, day, calendarType) {
     
     const formattedDay = formatNumber(day, currentLang);
     
-    // Get month name for API events
+    // Get month name for API events - use event.month if available, otherwise use current month
     let monthName = '';
     let monthIndex;
     
-    // Determine month index
+    // Determine month index - prefer event.month, fallback to current month
     if (event.month && !isNaN(event.month)) {
         monthIndex = event.month - 1;
     } else {
@@ -2965,15 +3065,11 @@ function createApiEventElement(event, day, calendarType) {
     
     monthIndex = Math.max(0, Math.min(11, monthIndex));
     
-    // Get month name
+    // Get month name based on calendar type
     if (calendarType === 'persian') {
-        monthName = (langData.apiMonths && langData.apiMonths.persian) 
-            ? langData.apiMonths.persian[monthIndex]
-            : langData.months.fa[monthIndex];
+        monthName = langData.months.fa[monthIndex];
     } else {
-        monthName = (langData.apiMonths && langData.apiMonths.gregorian) 
-            ? langData.apiMonths.gregorian[monthIndex]
-            : langData.months.en[monthIndex];
+        monthName = langData.months.en[monthIndex];
     }
     
     const title = document.createElement('div');
@@ -2998,11 +3094,11 @@ function createApiEventElement(event, day, calendarType) {
     
     const dayInfo = document.createElement('span');
     dayInfo.className = 'api-event-day';
-    
+    const monthNameText = eventsToShow.range ? `(${monthName})` : monthName
     if (currentLang === 'fa') {
-        dayInfo.textContent = `${formattedDay} ${monthName}`;
+        dayInfo.textContent = `${formattedDay} ${monthNameText}`;
     } else {
-        dayInfo.textContent = `${monthName} ${formattedDay}`;
+        dayInfo.textContent = `${monthNameText} ${formattedDay}`;
     }
 
     const type = document.createElement('span');
@@ -3028,10 +3124,8 @@ function createApiEventElement(event, day, calendarType) {
     rightGroup.appendChild(holidaySpan);
 
     meta.setAttribute('dir', currentLang === 'fa' ? 'rtl' : 'ltr');
-
     meta.appendChild(dayInfo);
     meta.appendChild(rightGroup);
-
 
     eventElement.appendChild(title);
     eventElement.appendChild(description);
@@ -3193,32 +3287,72 @@ function displayTabEvents(tabId, eventsData) {
     const tabPane = document.getElementById(`${tabId}EventsTab`);
     if (!tabPane) return;
 
-    let eventsToShow = null;
     let calendarTitle = '';
+    let isRangeData = false;
+    let rangeInfoText = '';
 
     // Determine which events to show based on tabId and apiEventsCalendar
     if (tabId === 'main') {
         eventsToShow = eventsData.main;
         calendarTitle = currentLang === 'fa' ? 'رویدادهای تقویم اصلی' : 'Main Calendar Events';
+        isRangeData = false;
     } else if (tabId === 'persian') {
         // Show Persian events from either main or secondary based on which calendar is Persian
-        eventsToShow = eventsData.main.calendar === 'persian' ? eventsData.main : eventsData.secondary;
+        if (eventsData.main.calendar === 'persian') {
+            eventsToShow = eventsData.main;
+            isRangeData = false;
+        } else {
+            eventsToShow = eventsData.secondary;
+            isRangeData = true;
+            
+            // Generate range info text for Persian secondary calendar
+            if (eventsToShow.range) {
+                const start = formatNumber(eventsToShow.range.start, currentLang);
+                const end = formatNumber(eventsToShow.range.end, currentLang);
+                rangeInfoText = currentLang === 'fa' 
+                    ? `بازه: ${start} تا ${end}`
+                    : `Range: ${start} to ${end}`;
+            }
+        }
         calendarTitle = currentLang === 'fa' ? 'رویدادهای تقویم فارسی' : 'Persian Calendar Events';
     } else if (tabId === 'gregorian') {
         // Show Gregorian events from either main or secondary based on which calendar is Gregorian
-        eventsToShow = eventsData.main.calendar === 'gregorian' ? eventsData.main : eventsData.secondary;
+        if (eventsData.main.calendar === 'gregorian') {
+            eventsToShow = eventsData.main;
+            isRangeData = false;
+        } else {
+            eventsToShow = eventsData.secondary;
+            isRangeData = true;
+            
+            // Generate range info text for Gregorian secondary calendar
+            if (eventsToShow.range) {
+                const start = formatNumber(eventsToShow.range.start, currentLang);
+                const end = formatNumber(eventsToShow.range.end, currentLang);
+                rangeInfoText = currentLang === 'fa' 
+                    ? `بازه: ${start} تا ${end}`
+                    : `Range: ${start} to ${end}`;
+            }
+        }
         calendarTitle = currentLang === 'fa' ? 'رویدادهای تقویم میلادی' : 'Gregorian Calendar Events';
     }
 
     if (eventsToShow && eventsToShow.success && eventsToShow.total_events > 0) {
         tabPane.innerHTML = '';
-        const eventsSection = createApiEventsSection(eventsToShow, calendarTitle);
+        
+        const eventsSection = createApiEventsSection(eventsToShow, calendarTitle, rangeInfoText);
         tabPane.appendChild(eventsSection);
     } else {
         tabPane.innerHTML = `
             <div class="no-api-events" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
                 <i class="fas fa-calendar-times" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-                <p>${currentLang === 'fa' ? 'رویدادی برای این ماه وجود ندارد' : 'No events for this month'}</p>
+                <p>${currentLang === 'fa' ? 'رویدادی برای این بازه زمانی وجود ندارد' : 'No events for this date range'}</p>
+                ${rangeInfoText ? `
+                    <div>
+                        <div style="font-size: 0.65rem;">
+                            ${rangeInfoText}
+                        </div>
+                    </div>
+                ` : ''}
             </div>
         `;
     }
@@ -3415,18 +3549,17 @@ function switchCalendar(type) {
  * @param {string} lang - Language code ('fa' or 'en')
  * @returns {string} Formatted number
  */
-function formatNumber(number, lang = currentLang) {
-    const num = parseInt(number);
-    if (isNaN(num)) return number;
-    
+function formatNumber(value, lang = currentLang) {
+    if (typeof value !== 'string' && typeof value !== 'number') return value;
+
+    const str = value.toString();
+
     if (lang === 'fa') {
-        // Convert to Persian digits without separators
-        return num.toString().replace(/\d/g, d => 
+        return str.replace(/\d/g, d =>
             ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'][d]
         );
     } else {
-        // Keep as Western digits without separators
-        return num.toString();
+        return str;
     }
 }
 
@@ -3680,6 +3813,20 @@ function getDaysInPersianMonth(year, month) {
  */
 function getDateKey(year, month, day) {
     return `${year}-${month}-${day}`;
+}
+
+/**
+ * Gets month name for display
+ * @param {number} month - Month number
+ * @param {string} calendarType - Calendar type
+ * @returns {string} Month name
+ */
+function getMonthName(month, calendarType) {
+    if (calendarType === 'persian') {
+        return langData.months.fa[month - 1];
+    } else {
+        return langData.months.en[month - 1];
+    }
 }
 
 // ======================= APPLICATION START =======================

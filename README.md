@@ -1,6 +1,6 @@
 # Roozegaar Calendar | تقویم روزگار
 
-<a href="https://roozegaar.github.io/roozegaar-calendar" target="_blank">Roozegaar Calendar PWA Live</a>
+<a href="https://roozegaar.github.io/calendar" target="_blank">Roozegaar Calendar PWA Live</a>
 
 ---
 
@@ -43,13 +43,13 @@
 
 ### روش ۱: استفاده مستقیم
 ```bash
-git clone https://github.com/username/Roozegaar Calendar.git
+git clone https://github.com/roozegaar/calendar.git
 cd Roozegaar Calendar
 open index.html
 ```
 
 ### روش ۲: استفاده به عنوان PWA
-1. مرورگر را باز کنید و به آدرس `https://username.github.io/Roozegaar Calendar` بروید  
+1. مرورگر را باز کنید و به آدرس `https://roozegaar.github.io/calendar` بروید  
 2. روی آیکون "نصب" در نوار آدرس کلیک کنید  
 3. اپلیکیشن روی دستگاه شما نصب خواهد شد  
 
@@ -153,13 +153,13 @@ A modern, responsive dual-language calendar with simultaneous display of Persian
 
 ### Method 1
 ```bash
-git clone https://github.com/username/Roozegaar Calendar.git
+git clone https://github.com/roozegaar/calendar.git
 cd Roozegaar Calendar
 open index.html
 ```
 
 ### Method 2 (PWA)
-1. Go to `https://username.github.io/Roozegaar Calendar`  
+1. Go to `https://roozegaar.github.io/calendar`  
 2. Click **Install** in the browser  
 3. Done ✅  
 

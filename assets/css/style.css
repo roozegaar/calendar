@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2025 Mehdi Dimyadi (https://github.com/MEHDIMYADI)
- * Project: Roozegaar Calendar (https://dimyadi.ir/roozegaar-calendar/)
+ * Project: Roozegaar Calendar (https://roozegaar.ir/)
  *
  * If you use or get inspiration from this project,
  * please kindly mention my name or this project in your work.
@@ -852,7 +852,7 @@ nav {
 
 .api-events-section-header {
     background: var(--primary-color);
-    color: white;
+    min-height: 80px;
     padding: 1rem 1.5rem;
     display: flex;
     justify-content: space-between;
@@ -891,7 +891,7 @@ nav {
 
 .api-events-count {
     background: rgba(255, 255, 255, 0.2);
-    padding: 0.25rem 0.75rem;
+    padding: 0.3rem 0.3rem;
     border-radius: 20px;
     font-size: 0.85rem;
 }
