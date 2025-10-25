@@ -2980,7 +2980,7 @@ function createApiEventsSection(eventsData, calendarTitle, rangeInfoText = '') {
             <h4>${calendarName}</h4>
             <small style="opacity: 0.9;">${calendarTitle}</small>
             ${rangeInfoText ? `
-                <div class="api-events-range-info" style="font-size: 0.6rem; opacity: 0.9;">
+                <div class="api-events-range-info" style="font-size: 0.7rem; opacity: 0.9;">
                     ${rangeInfoText}
                 </div>
             ` : ''}
