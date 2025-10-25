@@ -21,7 +21,7 @@
     "themeSetToLight": "Light theme activated",
     "themeSetToDark": "Dark theme activated",
     "langToggle": "Language",
-    "showApiEvents": "API Events",
+    "showApiEvents": "Display Calendar Events",
     "apiEventsCalendar": "Calendar Events", 
     "bothCalendars": "Both Calendars",      
     "addEvent": "Add Event",
