@@ -857,6 +857,7 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    color: white;
 }
 
 .api-events-section-header h4 {
