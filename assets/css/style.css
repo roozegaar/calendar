@@ -433,12 +433,12 @@ nav {
 
 .settings-content {
     background-color: var(--day-bg);
-    padding: 25px;
+    padding: 1rem;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: 1rem;
 }
 
 .toggle-group {
@@ -448,8 +448,7 @@ nav {
 }
 
 .setting-group {
-    margin-bottom: 15px;
-    padding-bottom: 20px;
+    padding-bottom: 1rem;
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -457,11 +456,6 @@ nav {
     grid-column: 1 / -1;
     display: flex;
     justify-content: center;
-}
-
-.setting-group label {
-    font-weight: 600;
-    color: var(--text-color);
 }
 
 .setting-select {
