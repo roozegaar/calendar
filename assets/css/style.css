@@ -893,13 +893,11 @@ nav {
 }
 
 .api-event-item {
-    padding: 1rem 1.5rem;
+    margin: 5px;
+    padding: .5rem;
     border-bottom: 1px solid var(--border-color);
     transition: background-color 0.2s ease;
-}
-
-.api-event-item:last-child {
-    border-bottom: none;
+    border-radius: 10px;
 }
 
 .api-event-item:hover {
@@ -1045,48 +1043,9 @@ nav {
     overflow-y: auto;
     min-height: 0;
     scrollbar-width: thin;
-    scrollbar-color: var(--scrollbar-thumb, #c1c1c1) var(--scrollbar-track, #f1f1f1);    
-}
-
-.api-events-container-inner::-webkit-scrollbar {
-    width: 6px;
-}
-
-.api-events-container-inner::-webkit-scrollbar-track {
-    background: var(--scrollbar-track, #f1f1f1);
-    border-radius: 3px;
-}
-
-.api-events-container-inner::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-thumb, #c1c1c1);
-    border-radius: 3px;
-}
-
-.api-events-container-inner::-webkit-scrollbar-thumb:hover {
-    background: var(--scrollbar-thumb-hover, #a8a8a8);
-}
-
-.api-event-item:last-child {
-    border-bottom: none;
-}
-
-.api-event-item:hover {
-    background: var(--hover-color);
-}
-
-.api-event-title {
-    font-weight: 600;
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-color);
-    line-height: 1.4;
-}
-
-.api-event-description {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    margin-bottom: 0.75rem;
-    line-height: 1.4;
+    scrollbar-color: var(--scrollbar-thumb, #c1c1c1) var(--scrollbar-track, #f1f1f1);  
+    padding: 0 15px 5px 5px;
+    margin: 3px;
 }
 
 .api-event-meta {
@@ -1103,14 +1062,6 @@ nav {
   align-items: center;
 }
 
-.api-event-day {
-    background: var(--primary-light);
-    color: var(--primary-color);
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
-    font-weight: 500;
-}
-
 .api-event-type {
     padding: 0.25rem 0.75rem;
     border-radius: 12px;
@@ -1120,11 +1071,6 @@ nav {
 .api-event-type.holiday {
     background: rgba(244, 67, 54, 0.1);
     color: #f44336;
-}
-
-.api-event-type:not(.holiday) {
-    background: rgba(33, 150, 243, 0.1);
-    color: #2196f3;
 }
 
 .api-tabs-content-wrapper.single-tab {
@@ -1150,9 +1096,8 @@ nav {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 1.1rem;
     opacity: 0.9;
-    padding: 1rem;
+    padding: .5rem;
     align-items: baseline;
 }
 
