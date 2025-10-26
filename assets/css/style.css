@@ -1048,7 +1048,6 @@ nav {
     scrollbar-color: var(--scrollbar-thumb, #c1c1c1) var(--scrollbar-track, #f1f1f1);    
 }
 
-/* Scrollbar for events container */
 .api-events-container-inner::-webkit-scrollbar {
     width: 6px;
 }
@@ -1139,6 +1138,33 @@ nav {
 
 #apiEventsCard[style*="display: none"] {
     display: none !important;
+}
+
+.api-events-range-info {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-radius: 0 0 10px 10px;
+    animation: slideInDown 0.5s ease-out;
+}
+
+.range-info-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+    opacity: 0.9;
+    padding: 1rem;
+    align-items: baseline;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes fadeIn {
@@ -1991,6 +2017,10 @@ body.offline-page main:not(.offline-container) {
 
     .controls {
         flex-shrink: 0;
+    }
+    
+    .range-info-header {
+        font-size: 0.85rem;
     }
     
     .footer-container {
