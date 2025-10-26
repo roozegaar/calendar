@@ -218,12 +218,6 @@ function initializeTheme() {
     // Apply saved theme
     applyTheme(savedTheme);
     
-    // Make sure the selectbox is updated too
-    if (themeSelect) {
-        themeSelect.value = savedTheme;
-        updateThemeSelect(savedTheme);
-    }
-    
     // Listen for system theme changes
     if (window.matchMedia) {
         const systemThemeMedia = window.matchMedia('(prefers-color-scheme: dark)');
@@ -255,12 +249,6 @@ function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme-mode', 'manual');
         document.documentElement.classList.add(`theme-${theme}`);
     }
-    
-    if (themeSelect) {
-        themeSelect.value = theme;
-    }
-    
-    updateThemeSelect(theme); 
 }
 
 /**
@@ -487,7 +475,11 @@ function setupSettingsPage() {
     }
 
     // Event listeners
+    themeSelect = document.getElementById('themeSelect');
     if (themeSelect) {
+        const savedTheme = localStorage.getItem('theme') || 'default';
+        themeSelect.value = savedTheme;
+        updateThemeSelect(savedTheme);
         themeSelect.addEventListener('change', handleThemeChange);
     }
     if (langSelect) {
@@ -513,8 +505,6 @@ function setupSettingsPage() {
     
     updateSettingsText();
     
-    // Update API events section visibility immediately
-    updateApiEventsSectionVisibility();    
 }
 
 /**
@@ -2958,7 +2948,9 @@ function removeDuplicateEvents(eventsByDay) {
 function createApiEventsSection(eventsData, calendarTitle, rangeInfoText = '') {
     const section = document.createElement('div');
     section.className = 'api-events-section';
-
+    if (apiEventsCalendar != 'both') {
+        section.style.borderRadius = '10px';
+    }
     const header = document.createElement('div');
     header.className = 'api-events-section-header';
     
