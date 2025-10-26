@@ -2979,11 +2979,6 @@ function createApiEventsSection(eventsData, calendarTitle, rangeInfoText = '') {
         <div>
             <h4>${calendarName}</h4>
             <small style="opacity: 0.9;">${calendarTitle}</small>
-            ${rangeInfoText ? `
-                <div class="api-events-range-info" style="font-size: 0.7rem; opacity: 0.9;">
-                    ${rangeInfoText}
-                </div>
-            ` : ''}
         </div>
         <div class="meta-right">
             <span class="api-events-count">${formattedCount} ${currentLang === 'fa' ? 'رویداد' : 'events'}</span>
@@ -2999,6 +2994,19 @@ function createApiEventsSection(eventsData, calendarTitle, rangeInfoText = '') {
 
     // Use events_by_day that was processed in processApiEvents
     const eventsByDay = eventsData.events_by_day || {};
+
+    // Add range info at the top if available
+    if (rangeInfoText) {
+        const rangeInfoElement = document.createElement('div');
+        rangeInfoElement.className = 'api-events-range-info';
+        rangeInfoElement.innerHTML = `
+            <div class="range-info-header">
+                <i class="fas fa-calendar-alt"></i>
+                <span>${rangeInfoText}</span>
+            </div>
+        `;
+        eventsContainer.appendChild(rangeInfoElement);
+    }
 
     // Add events for each day, sorted by day
     if (Object.keys(eventsByDay).length > 0) {
@@ -3310,8 +3318,8 @@ function displayTabEvents(tabId, eventsData) {
                 const start = formatNumber(eventsToShow.range.start, currentLang);
                 const end = formatNumber(eventsToShow.range.end, currentLang);
                 rangeInfoText = currentLang === 'fa' 
-                    ? `بازه: ${start} تا ${end}`
-                    : `Range: ${start} to ${end}`;
+                    ? `بازه زمانی: ${start} تا ${end}`
+                    : `Date Range: ${start} to ${end}`;
             }
         }
         calendarTitle = currentLang === 'fa' ? 'رویدادهای تقویم فارسی' : 'Persian Calendar Events';
@@ -3326,11 +3334,11 @@ function displayTabEvents(tabId, eventsData) {
             
             // Generate range info text for Gregorian secondary calendar
             if (eventsToShow.range) {
-                const start = formatNumber(eventsToShow.range.start, currentLang);
-                const end = formatNumber(eventsToShow.range.end, currentLang);
+                const start = formatNumber(eventsToShow.range.start, 'en');
+                const end = formatNumber(eventsToShow.range.end, 'en');
                 rangeInfoText = currentLang === 'fa' 
-                    ? `بازه: ${start} تا ${end}`
-                    : `Range: ${start} to ${end}`;
+                    ? `بازه زمانی: ${start} تا ${end}`
+                    : `Date Range: ${start} to ${end}`;
             }
         }
         calendarTitle = currentLang === 'fa' ? 'رویدادهای تقویم میلادی' : 'Gregorian Calendar Events';
@@ -3347,9 +3355,10 @@ function displayTabEvents(tabId, eventsData) {
                 <i class="fas fa-calendar-times" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
                 <p>${currentLang === 'fa' ? 'رویدادی برای این بازه زمانی وجود ندارد' : 'No events for this date range'}</p>
                 ${rangeInfoText ? `
-                    <div>
-                        <div style="font-size: 0.65rem;">
-                            ${rangeInfoText}
+                    <div class="api-events-range-info" style="margin-top: 1rem;">
+                        <div class="range-info-header">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>${rangeInfoText}</span>
                         </div>
                     </div>
                 ` : ''}
@@ -3357,7 +3366,6 @@ function displayTabEvents(tabId, eventsData) {
         `;
     }
 }
-
 /**
  * Updates API events tabs when calendar type changes
  */
