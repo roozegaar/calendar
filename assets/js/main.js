@@ -1430,11 +1430,9 @@ function initializeDOMElements() {
  * Sets up all event listeners
  */
 function setupEventListeners() {
-    setupMobileMenu();
     setupNavigation();
     setupCalendarNavigation();
     setupEventModal();
-    setupThemeAndLanguageToggles();
     setupThemeAndLanguageToggles();
 }
 
@@ -1484,18 +1482,6 @@ function setupNavigation() {
                 // Scroll to top
                 scrollToTop();
             }
-        }
-    });
-}
-
-/**
- * Sets up mobile menu functionality
- */
-function setupMobileMenu() {
-    // Use event delegation instead of direct event listeners
-    document.addEventListener('click', (e) => {
-        if (e.target.closest('#mobileMenuBtn')) {
-            toggleMobileMenu();
         }
     });
 }
@@ -2105,27 +2091,6 @@ function highlightToday() {
 }
 
 // ======================= EVENT MANAGEMENT =======================
-/**
- * Starts long press timer for event creation
- * @param {Event} e - Event object
- * @param {number} year - Year
- * @param {number} month - Month
- * @param {number} day - Day
- */
-function startLongPress(e, year, month, day) {
-    e.preventDefault();
-    clickTimer = setTimeout(() => {
-        openEventModal(year, month, day);
-    }, longPressDuration);
-}
-
-/**
- * Cancels long press timer
- */
-function cancelLongPress() {
-    clearTimeout(clickTimer);
-}
-
 /**
  * Handles day click for selection
  * @param {HTMLElement} dayElement - Clicked day element
@@ -3636,23 +3601,6 @@ function updateUITexts(lang) {
 }
 
 /**
- * Toggles mobile menu visibility
- */
-function toggleMobileMenu() {
-    const navMenu = document.getElementById('navMenu');
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    
-    if (navMenu && mobileMenuBtn) {
-        navMenu.classList.toggle('active');
-        
-        // Update button icon
-        const isActive = navMenu.classList.contains('active');
-        mobileMenuBtn.innerHTML = isActive ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
-        mobileMenuBtn.setAttribute('aria-expanded', isActive.toString());
-    }
-}
-
-/**
  * Shows toast notification
  * @param {string} message - Message to display
  */
@@ -3776,20 +3724,6 @@ function getDaysInPersianMonth(year, month) {
  */
 function getDateKey(year, month, day) {
     return `${year}-${month}-${day}`;
-}
-
-/**
- * Gets month name for display
- * @param {number} month - Month number
- * @param {string} calendarType - Calendar type
- * @returns {string} Month name
- */
-function getMonthName(month, calendarType) {
-    if (calendarType === 'persian') {
-        return langData.months.fa[month - 1];
-    } else {
-        return langData.months.en[month - 1];
-    }
 }
 
 // ======================= APPLICATION START =======================
