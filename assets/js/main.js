@@ -3345,15 +3345,7 @@ function displayTabEvents(tabId, eventsData) {
         tabPane.innerHTML = `
             <div class="no-api-events" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
                 <i class="fas fa-calendar-times" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-                <p>${currentLang === 'fa' ? 'رویدادی برای این بازه زمانی وجود ندارد' : 'No events for this date range'}</p>
-                ${rangeInfoText ? `
-                    <div class="api-events-range-info" style="margin-top: 1rem;">
-                        <div class="range-info-header">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>${rangeInfoText}</span>
-                        </div>
-                    </div>
-                ` : ''}
+                <p>${currentLang === 'fa' ? 'رویدادی در تقویم رسمی برای این بازه وجود ندارد' : 'There are no events in the official calendar for this period'}</p>
             </div>
         `;
     }
@@ -3561,35 +3553,6 @@ function formatNumber(value, lang = currentLang) {
     } else {
         return str;
     }
-}
-
-/**
- * Formats a single digit based on current language
- * @param {string} digit - Single digit (0-9)
- * @param {string} lang - Language code ('fa' or 'en')
- * @returns {string} Formatted digit
- */
-function formatDigit(digit, lang = currentLang) {
-    if (lang === 'fa') {
-        const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-        return persianDigits[parseInt(digit)] || digit;
-    }
-    return digit;
-}
-
-/**
- * Formats all numbers in a string based on current language
- * @param {string} text - Text containing numbers
- * @param {string} lang - Language code ('fa' or 'en')
- * @returns {string} Text with formatted numbers
- */
-function formatNumbersInText(text, lang = currentLang) {
-    if (lang === 'fa') {
-        return text.replace(/\d+/g, match => 
-            match.split('').map(d => formatDigit(d, lang)).join('')
-        );
-    }
-    return text;
 }
 
 // ======================= PWA FUNCTIONALITY =======================
