@@ -1584,6 +1584,8 @@ class MobileMenu {
         navLinks.forEach(link => {
             link.addEventListener('click', () => {
                 this.closeMenuWithAnimation();
+                // Scroll to top
+                scrollToTop();
             });
         });
     }    
