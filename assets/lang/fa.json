@@ -20,7 +20,7 @@
     "themeSetToDefault": "تم روی پیش‌فرض سیستم تنظیم شد",
     "themeSetToLight": "تم روشن فعال شد",
     "themeSetToDark": "تم تاریک فعال شد",
-    "langToggle": "زبان",
+    "lang": "زبان",
     "showApiEvents": "نمایش رویدادهای تقویم",
     "apiEventsCalendar": "رویدادهای تقویم",
     "bothCalendars": "هر دو تقویم",      

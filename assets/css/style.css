@@ -109,6 +109,10 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+html[dir="rtl"] .rtl-mirror {
+  transform: scaleX(-1);
+}
+
 /* ======================= HEADER & NAVIGATION ======================= */
 
 header {
@@ -1626,13 +1630,14 @@ nav {
     align-items: center;
 }
 
-.footer-links a:hover {
-    color: var(--primary-color);
-    padding-right: 5px;
+.footer-links a:hover,
+.footer-links a:hover ~ i,
+.footer-links li:hover i {
+  color: var(--primary-color);
 }
 
-.footer-links a i {
-    margin-left: 8px;
+.footer-links i {
+    margin: 5px;
     font-size: 0.9rem;
 }
 
@@ -1647,7 +1652,14 @@ nav {
 }
 
 .contact-info i {
-    margin-top: 5px;
+    margin: 5px;
+    font-size: 0.9rem;
+}
+
+.contact-info a:hover,
+.contact-info a:hover ~ i,
+.contact-info li:hover i {
+  color: var(--primary-color);
 }
 
 .email-link {
@@ -1891,7 +1903,7 @@ body.offline-page main:not(.offline-container) {
 .sun-times-card {
     width: 100%;
     border-radius: 10px;
-    padding: 20px;
+    padding: 10px;
     margin-top: 20px;
     min-height: 120px;
     display: flex;
@@ -1923,7 +1935,6 @@ body.offline-page main:not(.offline-container) {
 }
 
 .sun-times-title {
-    font-size: 1.2rem;
     font-weight: 600;
     color: var(--text-color);
     margin: 0;
@@ -1931,10 +1942,6 @@ body.offline-page main:not(.offline-container) {
 
 .sun-times-city {
     font-size: 0.9rem;
-    color: var(--text-secondary);
-    background: rgba(var(--primary-color-rgb), 0.1);
-    padding: 0.3rem 0.8rem;
-    border-radius: 15px;
 }
 
 .sun-times-content {
@@ -1944,21 +1951,6 @@ body.offline-page main:not(.offline-container) {
     margin-bottom: 1rem;
 }
 
-.sun-time-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 1rem;
-    background: rgba(var(--primary-color-rgb), 0.05);
-    border-radius: 10px;
-    transition: all 0.3s ease;
-}
-
-.sun-time-item:hover {
-    background: rgba(var(--primary-color-rgb), 0.1);
-    transform: translateY(-2px);
-}
-
 .sun-time-icon {
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
@@ -1966,7 +1958,7 @@ body.offline-page main:not(.offline-container) {
 }
 
 .sun-time-icon .fas.fa-sun {
-    color: #FFD700;
+    color: #c3a60b;
 }
 
 .sun-time-icon .fas.fa-moon {
@@ -1996,7 +1988,6 @@ body.offline-page main:not(.offline-container) {
     justify-content: space-between;
     align-items: center;
     font-size: 0.85rem;
-    color: var(--text-secondary);
     padding-top: 0.5rem;
     border-top: 1px solid var(--border-color);
 }
@@ -2124,7 +2115,6 @@ body.offline-page main:not(.offline-container) {
         position: static;
         transform: none;
         flex-direction: column;
-        background: var(--nav-bg);
         width: 100%;
         text-align: center;
     }
@@ -2267,11 +2257,6 @@ body.offline-page main:not(.offline-container) {
         padding: 8px 0;
     }
     
-    .footer-links a:hover {
-        padding-right: 0;
-        transform: translateX(5px);
-    }
-    
     .contact-info {
         padding: 0;
         text-align: center;
@@ -2293,12 +2278,6 @@ body.offline-page main:not(.offline-container) {
     .footer-bottom {
         padding-top: 15px;
         font-size: 0.85rem;
-    }
-    
-    [dir="rtl"] .footer-links a:hover {
-        padding-left: 5px;
-        padding-right: 0;
-        transform: translateX(-5px);
     }
     
     [dir="rtl"] .contact-info i {
@@ -2427,10 +2406,6 @@ body.offline-page main:not(.offline-container) {
 
     .sun-times-content {
         gap: 0.8rem;
-    }
-
-    .sun-time-item {
-        padding: 0.8rem;
     }
 
     .sun-time-icon {

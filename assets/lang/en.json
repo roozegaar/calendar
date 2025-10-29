@@ -20,7 +20,7 @@
     "themeSetToDefault": "Theme set to system default",
     "themeSetToLight": "Light theme activated",
     "themeSetToDark": "Dark theme activated",
-    "langToggle": "Language",
+    "lang": "Language",
     "showApiEvents": "Display Calendar Events",
     "apiEventsCalendar": "Calendar Events", 
     "bothCalendars": "Both Calendars",      

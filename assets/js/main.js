@@ -402,7 +402,7 @@ async function navigateTo(page) {
             pageTitle = langData.ui.faq || 'سوالات متداول';
         } else if (page === 'about') {
             componentUrl = `${BASE_PATH}/assets/components/about.html`;
-            pageTitle = langData.ui.about || 'درباره ما';
+            pageTitle = langData.ui.about || 'درباره';
         }
 
         if (componentUrl) {
@@ -1484,8 +1484,6 @@ function setupNavigation() {
                 navigateTo('calendar');
             } else if (linkText.includes('settings') || linkText.includes('تنظیمات')) {
                 navigateTo('settings');
-            } else if (linkText.includes('about') || linkText.includes('درباره')) {
-                navigateTo('about');
             }
             
             // Menu will be closed automatically by the MobileMenu class
@@ -2538,7 +2536,7 @@ function updateNavigationText() {
                 pageTitle = langData.ui.faq || 'FAQ';
                 break;
             case 'about':
-                pageTitle = langData.ui.about || 'About Us';
+                pageTitle = langData.ui.about || 'About';
                 break;
         }
         updateLogoWithPageTitle(pageTitle);
@@ -2547,7 +2545,7 @@ function updateNavigationText() {
     const navItems = document.querySelectorAll('#navMenu li span');
     if (navItems[0]) navItems[0].textContent = langData.ui.calendar || 'Calendar';
     if (navItems[1]) navItems[1].textContent = langData.ui.settings || 'Settings';
-    if (navItems[2]) navItems[2].textContent = langData.ui.about || 'About Us';
+    if (navItems[2]) navItems[2].textContent = langData.ui.about || 'About';
 }
 
 /**
@@ -2658,9 +2656,10 @@ function updateFooterText() {
     // Update more info links
     const moreInfoLinks = footer.querySelectorAll('.footer-column:nth-child(4) .footer-links li a');
     if (moreInfoLinks.length >= 3) {
-        moreInfoLinks[0].textContent = langData.ui.privacyPolicy || 'حریم خصوصی';
-        moreInfoLinks[1].textContent = langData.ui.termsConditions || 'قوانین و مقررات';
-        moreInfoLinks[2].textContent = langData.ui.faq || 'سوالات متداول';
+        moreInfoLinks[0].textContent = langData.ui.faq || 'سوالات متداول';        
+        moreInfoLinks[1].textContent = langData.ui.privacyPolicy || 'حریم خصوصی';
+        moreInfoLinks[2].textContent = langData.ui.termsConditions || 'قوانین و مقررات';
+        moreInfoLinks[3].textContent = langData.ui.about || 'درباره';        
     }
 
     // Update copyright with dynamic date based on language
@@ -2729,7 +2728,7 @@ function updateSettingsText() {
     if (themeLabel) themeLabel.textContent = langData.ui.theme || 'Theme';
     
     const langLabel = document.querySelector('label[for="langSelect"]');
-    if (langLabel) langLabel.textContent = langData.ui.langToggle || 'Language';
+    if (langLabel) langLabel.textContent = langData.ui.lang || 'Language';
     
     const calendarLabel = document.querySelector('label[for="calendarTypeSelect"]');
     if (calendarLabel) calendarLabel.textContent = langData.ui.settingsCalendar || 'Main Calendar';
@@ -3764,7 +3763,9 @@ function updateSunTimesCard(sunrise, sunset, duration, date) {
     container.innerHTML = `
         <div class="sun-times-header">
             <h4 class="sun-times-title">${currentLang === 'fa' ? 'طلوع و غروب خورشید' : 'Sunrise & Sunset'}</h4>
-            <span class="sun-times-city">${cityName}</span>
+            <span class="sun-times-city">
+                <i class="fas fa-map-marker-alt"></i>
+                ${cityName}</span>
         </div>
         
         <div class="sun-times-content">
@@ -3782,7 +3783,10 @@ function updateSunTimesCard(sunrise, sunset, duration, date) {
         </div>
         
         <div class="sun-times-footer">
-            <span class="sun-times-date">${dateFormatted}</span>
+            <span class="sun-times-date">
+                <i class="fas fa-calendar"></i>
+                ${dateFormatted}
+            </span>
             <span class="sun-times-info">
                 <i class="fas fa-clock"></i>
                 ${currentLang === 'fa' ? 'طول روز:' : 'Day length:'} ${duration}
