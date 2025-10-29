@@ -1561,7 +1561,7 @@ nav {
 }
 
 .footer-toggle-btn {
-    background: none;
+    background: rgba(33, 150, 243, 0.1);
     border: none;
     color: var(--footer-text);
     cursor: pointer;
@@ -1573,7 +1573,7 @@ nav {
 }
 
 .footer-toggle-btn:hover {
-    background: rgba(33, 150, 243, 0.1);
+    background: rgba(33, 150, 243, 0.5);
     transform: translateY(-2px);
 }
 
