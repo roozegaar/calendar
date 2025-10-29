@@ -1749,7 +1749,7 @@ function renderEmptyDays(count) {
 		emptyDay.classList.add('day', 'empty-day');
         emptyDay.style.pointerEvents = 'none';
         emptyDay.style.cursor = 'default';
-        emptyDay.style.opacity = '0.4';
+        emptyDay.style.opacity = '0';
         
         daysGrid.appendChild(emptyDay);
     }
