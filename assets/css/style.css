@@ -2426,7 +2426,6 @@ body.offline-page main:not(.offline-container) {
     }
 
     .sun-times-content {
-        grid-template-columns: 1fr;
         gap: 0.8rem;
     }
 
@@ -2443,7 +2442,6 @@ body.offline-page main:not(.offline-container) {
     }
 
     .sun-times-footer {
-        flex-direction: column;
         gap: 0.5rem;
         text-align: center;
     }
