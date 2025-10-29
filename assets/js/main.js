@@ -68,7 +68,6 @@ function initializeApp() {
             initializePWA();
             registerServiceWorker();
             initializeSettingsModal();
-            initializeFooterToggle();            
             setupSettingsHandlers();
 
             // Initialize calendar
@@ -103,6 +102,8 @@ function initializeApp() {
             
             // Initialize mobile menu
             new MobileMenu();
+            
+            initializeFooterToggle();
             
             console.log('✅ App initialized successfully!');
                         
@@ -148,6 +149,7 @@ let persianDay, persianMonth, persianFullDate;
 let gregorianDay, gregorianMonth, gregorianFullDate;
 let dailyEventsContainer;
 let apiEventsSection, apiEventsToggle, apiEventsCalendarSelect;
+let footerToggle, footerContainer;
 
 let themeToggle, langToggle, mobileMenuBtn, navMenu;
 let prevYearBtn, prevMonthBtn, todayBtn, nextMonthBtn, nextYearBtn;
@@ -1451,6 +1453,9 @@ function initializeDOMElements() {
     apiEventsToggle = document.getElementById('apiEventsToggle');
     apiEventsCalendarSelect = document.getElementById('apiEventsCalendarSelect');
 
+    footerToggle = document.getElementById('footerToggle');
+    footerContainer = document.getElementById('footerContainer');
+    
     // Log initialization status
     console.log('DOM elements initialized:', {
         currentMonthYear: !!currentMonthYear,
@@ -4002,8 +4007,6 @@ function getSunTimes(cityId, date) {
  * Initializes footer toggle functionality
  */
 function initializeFooterToggle() {
-    const footerToggle = document.getElementById('footerToggle');
-    const footerContainer = document.getElementById('footerContainer');
     const footer = document.querySelector('.footer');
     
     if (!footerToggle || !footerContainer) return;
@@ -4108,7 +4111,6 @@ function updateFooterState(isExpanded, toggleBtn, container, footer, shouldScrol
  * Updates footer toggle text based on language
  */
 function updateFooterToggleText() {
-    const footerToggle = document.getElementById('footerToggle');
     if (!footerToggle) return;
     
     const toggleText = footerToggle.querySelector('.toggle-text');
