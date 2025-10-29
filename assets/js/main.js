@@ -2050,6 +2050,8 @@ async function handleTodayButton() {
     
     dailyEventsCard(todayKey);
     
+    updateSunTimesDisplay();
+
     // After calendar navigation
     await loadApiEvents();
     
