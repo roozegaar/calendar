@@ -32,6 +32,7 @@ const urlsToCache = [
 	`${BASE_PATH}/assets/js/calendar-api.js`,
     `${BASE_PATH}/assets/data/manifest-en.json`,
     `${BASE_PATH}/assets/data/manifest-fa.json`,
+    `${BASE_PATH}/assets/data/cities.json`,	
     `${BASE_PATH}/assets/lang/fa.json`,
     `${BASE_PATH}/assets/lang/en.json`,
     `${BASE_PATH}/assets/images/icons/icon-72x72.png`,
