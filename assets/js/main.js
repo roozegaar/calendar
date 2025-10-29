@@ -68,6 +68,7 @@ function initializeApp() {
             initializePWA();
             registerServiceWorker();
             initializeSettingsModal();
+            initializeFooterToggle();            
             setupSettingsHandlers();
 
             // Initialize calendar
@@ -140,6 +141,7 @@ let currentPage = 'calendar';
 let eventsToShow = null;
 let cities = {};
 let currentCity = localStorage.getItem('selectedCity') || 'tehran';
+let defaultFooterExpanded = true;
 
 // ======================= DOM ELEMENTS =======================
 let persianDay, persianMonth, persianFullDate;
@@ -2498,6 +2500,7 @@ function applyLanguage() {
     updateModalText();
     updateFooterText();
     updatePwaText();
+    updateFooterToggleText();    
     updateSettingsText();
     calendarCards();
     
@@ -3992,6 +3995,132 @@ function getSunTimes(cityId, date) {
     sunset.setHours(Math.floor(sunsetHour), Math.floor((sunsetHour%1)*60), Math.floor((((sunsetHour%1)*60)%1)*60));
 
     return { sunrise, sunset };
+}
+
+// ======================= FOOTER TOGGLE FUNCTIONALITY =======================
+/**
+ * Initializes footer toggle functionality
+ */
+function initializeFooterToggle() {
+    const footerToggle = document.getElementById('footerToggle');
+    const footerContainer = document.getElementById('footerContainer');
+    const footer = document.querySelector('.footer');
+    
+    if (!footerToggle || !footerContainer) return;
+    
+    // Load saved state from localStorage - FIXED LOGIC
+    const savedState = localStorage.getItem('footerExpanded');
+    let isFooterExpanded;
+    
+    if (savedState === null) {
+        // First time user - use default value
+        isFooterExpanded = defaultFooterExpanded;
+        localStorage.setItem('footerExpanded', isFooterExpanded.toString());
+    } else {
+        // Returning user - use saved preference
+        isFooterExpanded = savedState === 'true';
+    }
+    
+    console.log('Footer state:', { 
+        savedState, 
+        defaultFooterExpanded, 
+        isFooterExpanded 
+    });
+    
+    // Set initial state WITHOUT auto-scroll
+    updateFooterState(isFooterExpanded, footerToggle, footerContainer, footer, false);
+    
+    // Add event listener
+    footerToggle.addEventListener('click', () => {
+        const currentState = footerToggle.getAttribute('aria-expanded') === 'true';
+        const newState = !currentState;
+        
+        updateFooterState(newState, footerToggle, footerContainer, footer, true);
+        localStorage.setItem('footerExpanded', newState.toString());
+        
+        console.log('Footer toggled to:', newState);
+    });
+}
+
+/**
+ * Updates footer toggle state
+ * @param {boolean} isExpanded - Whether footer is expanded
+ * @param {HTMLElement} toggleBtn - Toggle button element
+ * @param {HTMLElement} container - Footer container element
+ * @param {HTMLElement} footer - Footer element
+ * @param {boolean} shouldScroll - Whether to scroll to footer (only on user action)
+ */
+function updateFooterState(isExpanded, toggleBtn, container, footer, shouldScroll = false) {
+    if (isExpanded) {
+        // Expand footer
+        toggleBtn.setAttribute('aria-expanded', 'true');
+        container.classList.remove('collapsed');
+        container.classList.add('expanded');
+        footer.classList.remove('collapsed');
+        footer.classList.add('expanded');
+        
+        // Update button text
+        const toggleText = toggleBtn.querySelector('.toggle-text');
+        if (toggleText) {
+            toggleText.textContent = langData.ui.hideFooter || 'بستن پاورقی';
+        }
+        
+        // Only scroll when user explicitly clicks the toggle button
+        if (shouldScroll) {
+            setTimeout(() => {
+                window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 300);
+        }
+        
+    } else {
+        // Collapse footer
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        container.classList.remove('expanded');
+        container.classList.add('collapsed');
+        footer.classList.remove('expanded');
+        footer.classList.add('collapsed');
+        
+        // Update button text
+        const toggleText = toggleBtn.querySelector('.toggle-text');
+        if (toggleText) {
+            toggleText.textContent = langData.ui.showFooter || 'نمایش پاورقی';
+        }
+        
+        // Only adjust scroll position when user explicitly collapses
+        if (shouldScroll) {
+            setTimeout(() => {
+                const isAtBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
+                if (isAtBottom) {
+                    window.scrollTo({
+                        top: document.body.scrollHeight - window.innerHeight - 100,
+                        behavior: 'smooth'
+                    });
+                }
+            }, 300);
+        }
+    }
+}
+
+/**
+ * Updates footer toggle text based on language
+ */
+function updateFooterToggleText() {
+    const footerToggle = document.getElementById('footerToggle');
+    if (!footerToggle) return;
+    
+    const toggleText = footerToggle.querySelector('.toggle-text');
+    const isExpanded = footerToggle.getAttribute('aria-expanded') === 'true';
+    
+    if (toggleText) {
+        if (isExpanded) {
+            toggleText.textContent = langData.ui.hideFooter || 'بستن پاورقی';
+        } else {
+            toggleText.textContent = langData.ui.showFooter || 'نمایش پاورقی';
+        }
+    }
 }
 
 // ======================= UI HELPER FUNCTIONS =======================

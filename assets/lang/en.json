@@ -70,7 +70,9 @@
     "aboutDescription": "Roozegaar Calendar - A complete tool for time and event management in both Persian and English",
     "supportEmailAddress": "mahdi2006d@gmail.com",
     "resetSettings": "Reset Settings",
-    "resetConfirm": "Are you sure you want to reset all settings?"
+    "resetConfirm": "Are you sure you want to reset all settings?",
+    "showFooter": "Show Footer",
+    "hideFooter": "Hide Footer"
   },
     "months": {
         "fa": ["Farvardin", "Ordibehesht", "Khordad", "Tir", "Mordad", "Shahrivar", "Mehr", "Aban", "Azar", "Dey", "Bahman", "Esfand"],
