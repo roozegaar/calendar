@@ -18,6 +18,10 @@ function initializeApp() {
         console.log('🚀 App initialization started...');
         
         try {
+            // Load cities data first with error handling
+            console.log('🏙️ Loading cities data...');
+            await loadCitiesData();
+            
             // Initialize components
             console.log('📦 Loading components...');
             await loadAllComponents();
@@ -77,6 +81,9 @@ function initializeApp() {
 
             dailyEventsCard(todayKey);
             
+            // Update sun times display
+            updateSunTimesDisplay();
+            
             // Update API events section visibility
             updateApiEventsSectionVisibility();
             
@@ -127,11 +134,12 @@ let apiEventsCalendar = localStorage.getItem('apiEventsCalendar') || 'both';
 let activeApiEventsTab = localStorage.getItem('activeApiEventsTab') || 'main';
 let langData = {};
 let deferredPrompt;
-let clickTimer;
 const longPressDuration = 500;
 let selectedDayElement = null;
 let currentPage = 'calendar'; 
 let eventsToShow = null;
+let cities = {};
+let currentCity = localStorage.getItem('selectedCity') || 'tehran';
 
 // ======================= DOM ELEMENTS =======================
 let persianDay, persianMonth, persianFullDate;
@@ -417,6 +425,8 @@ async function navigateTo(page) {
                     : getDateKey(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate());
                 dailyEventsCard(todayKey);
                 
+                updateSunTimesDisplay();
+                
                 // Load API events only if enabled
                 if (showApiEvents) {
                     console.log('📅 Loading API events...');
@@ -463,6 +473,28 @@ function setupSettingsPage() {
     if (calendarTypeSelect) calendarTypeSelect.value = currentCalendar;
     if (secondaryCalendarToggle) secondaryCalendarToggle.checked = showSecondaryCalendar;
     
+    // Initialize city selection
+    const citySelect = document.getElementById('citySelect');
+    if (citySelect) {
+        initializeCitySelection();
+        
+        // Set current city if available
+        if (cities[currentCity]) {
+            citySelect.value = currentCity;
+        }
+        
+        // Add event listener for city changes
+        citySelect.addEventListener('change', function() {
+            const city = this.value;
+            localStorage.setItem('selectedCity', city);
+            currentCity = city;
+            updateSunTimesDisplay();
+            showToast(langData.ui.settingsSaved || 'تنظیمات ذخیره شد');
+        });
+    } else {
+        console.warn('⚠️ City select element not found during settings setup');
+    }
+    
     // Ensure API events settings are properly set
     if (apiEventsToggle) {
         apiEventsToggle.checked = showApiEvents;
@@ -496,7 +528,7 @@ function setupSettingsPage() {
     }
     if (apiEventsCalendarSelect) {
         apiEventsCalendarSelect.addEventListener('change', handleApiEventsCalendarChange);
-    }
+    }   
     
     const resetBtn = document.getElementById('resetSettings');
     if (resetBtn) {
@@ -1310,13 +1342,15 @@ function resetSettings() {
         localStorage.removeItem('apiEventsCalendar');
         localStorage.removeItem('activeApiEventsTab');
         localStorage.removeItem('calendarEvents');
-        
+        localStorage.setItem('selectedCity', 'tehran');
+
         currentLang = 'fa';
         currentCalendar = 'persian';
         localStorage.setItem('showSecondaryCalendar', 'true');
         localStorage.setItem('showApiEvents', 'false');
         apiEventsCalendar = 'both';
         activeApiEventsTab = 'main';
+        currentCity = 'tehran';
         events = {};
         
         if (themeSelect) themeSelect.value = 'default';
@@ -1864,7 +1898,6 @@ function setupDayEventListeners(dayElement, year, month, day) {
     }
 
     let longPressTimer;
-    const longPressDuration = 500;
 
     // Touch/click start function
     const startPress = (e) => {
@@ -2122,6 +2155,9 @@ function handleDayClick(dayElement, year, month, day) {
     if (eventModal.style.display === 'flex') {
         updateEventsList(dateKey);
     }
+    
+    // Update sun times for selected day
+    updateSunTimesForSelectedDay(year, month, day);
 }
 
 /**
@@ -2699,6 +2735,9 @@ function updateSettingsText() {
     const secondaryLabel = document.querySelector('label[for="secondaryCalendarToggle"]');
     if (secondaryLabel) secondaryLabel.textContent = langData.ui.showSecondaryCalendar || 'Show Secondary Calendar';
 
+    const provinceSelectLabel = document.querySelector('label[for="provinceSelectLabel"]');
+    if (provinceSelectLabel) provinceSelectLabel.textContent = langData.ui.provinceSelectLabel || 'Choose the province';
+
     const resetSettings = document.getElementById('resetSettings');
     if (resetSettings) resetSettings.textContent = langData.ui.resetSettings || 'Reset Settings';
 
@@ -2718,7 +2757,34 @@ function updateSettingsText() {
         if (calendarTypeSelect.options[1]) calendarTypeSelect.options[1].text = langData.ui.gregorian || 'Gregorian';
     }
     
+    // Update city select placeholder
+    const citySelect = document.getElementById('citySelect');
+    if (citySelect && citySelect.options[0]) {
+        citySelect.options[0].text = currentLang === 'fa' ? 'انتخاب شهر' : 'Select City';
+    }
+    
+    updateCitySelectOptions();
+    
     updateAPIEventsText();
+}
+
+/**
+ * Updates city select options based on current language
+ */
+function updateCitySelectOptions() {
+    const citySelect = document.getElementById('citySelect');
+    if (!citySelect || !cities) return;
+    
+    const options = citySelect.querySelectorAll('option');
+    options.forEach(option => {
+        const cityId = option.value;
+        if (cityId && cities[cityId]) {
+            const city = cities[cityId];
+            option.textContent = currentLang === 'fa' 
+                ? `${city.fa}`
+                : `${city.en}`;
+        }
+    });
 }
 
 // ======================= API EVENTS MANAGEMENT =======================
@@ -3573,6 +3639,353 @@ function registerServiceWorker() {
                 });
         });
     }
+}
+
+// ======================= SUNRISE/SUNSET DISPLAY =======================
+/**
+ * Improved sun times display updater
+ */
+function updateSunTimesDisplay() {
+    try {
+        if (!cities || Object.keys(cities).length === 0) {
+            console.warn('⚠️ Cities data not loaded yet');
+            setTimeout(updateSunTimesDisplay, 500);
+            return;
+        }
+        
+        if (!cities[currentCity]) {
+            console.warn(`⚠️ Current city "${currentCity}" not found, using Tehran`);
+            currentCity = 'tehran';
+            localStorage.setItem('selectedCity', currentCity);
+        }
+        
+        let date;
+        if (selectedDayElement) {
+            date = getSelectedDate();
+        } else {
+            date = new Date();
+        }
+        
+        const sunTimes = getSunTimes(currentCity, date);
+        
+        if (!sunTimes || !sunTimes.sunrise || !sunTimes.sunset) {
+            throw new Error('Invalid sun times calculation');
+        }
+        
+        const sunriseTime = formatTime(sunTimes.sunrise, currentLang);
+        const sunsetTime = formatTime(sunTimes.sunset, currentLang);
+        const dayDuration = calculateDayDuration(sunTimes.sunrise, sunTimes.sunset);
+        
+        updateSunTimesCard(sunriseTime, sunsetTime, dayDuration, date);
+        
+    } catch (error) {
+        console.error('❌ Error updating sun times display:', error);
+        showSunTimesError();
+    }
+}
+
+/**
+ * Shows error message when sun times calculation fails
+ */
+function showSunTimesError() {
+    const container = document.getElementById('sunTimesContainer');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="sun-times-header">
+            <h4 class="sun-times-title">${currentLang === 'fa' ? 'طلوع و غروب خورشید' : 'Sunrise & Sunset'}</h4>
+            <span class="sun-times-city">${currentLang === 'fa' ? 'خطا در محاسبات' : 'Calculation Error'}</span>
+        </div>
+        
+        <div class="sun-times-error">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div class="error-message">
+                <h5>${currentLang === 'fa' ? 'خطا در محاسبه زمان‌ها' : 'Error calculating times'}</h5>
+                <p>${currentLang === 'fa' ? 'امکان محاسبه طلوع و غروب در حال حاضر وجود ندارد' : 'Unable to calculate sunrise and sunset at this time'}</p>
+            </div>
+        </div>
+        
+        <div class="sun-times-footer">
+            <span class="sun-times-info" style="color: var(--warning-color);">
+                <i class="fas fa-clock"></i>
+                ${currentLang === 'fa' ? 'لطفاً مجدداً تلاش کنید' : 'Please try again later'}
+            </span>
+        </div>
+    `;
+}
+
+/**
+ * Gets the currently selected date
+ * @returns {Date} Selected date
+ */
+function getSelectedDate() {
+    if (currentCalendar === 'persian') {
+        return persianToGregorian(currentPersianDate);
+    } else {
+        return currentDate;
+    }
+}
+
+/**
+ * Calculates day duration between sunrise and sunset
+ * @param {Date} sunrise - Sunrise time
+ * @param {Date} sunset - Sunset time
+ * @returns {string} Formatted duration
+ */
+function calculateDayDuration(sunrise, sunset) {
+    const durationMs = sunset - sunrise;
+    const hours = Math.floor(durationMs / (1000 * 60 * 60));
+    const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (currentLang === 'fa') {
+        return `${formatNumber(hours, 'fa')} ساعت و ${formatNumber(minutes, 'fa')} دقیقه`;
+    } else {
+        return `${hours}h ${minutes}m`;
+    }
+}
+
+/**
+ * Updates the sun times card with current data
+ */
+function updateSunTimesCard(sunrise, sunset, duration, date) {
+    const container = document.getElementById('sunTimesContainer');
+    if (!container) return;
+    
+    const cityData = cities[currentCity];
+    if (!cityData) return;
+    
+    const cityName = currentLang === 'fa' ? cityData.fa : cityData.en;
+    const dateFormatted = formatDateForCard(date);
+    
+    container.innerHTML = `
+        <div class="sun-times-header">
+            <h4 class="sun-times-title">${currentLang === 'fa' ? 'طلوع و غروب خورشید' : 'Sunrise & Sunset'}</h4>
+            <span class="sun-times-city">${cityName}</span>
+        </div>
+        
+        <div class="sun-times-content">
+            <div class="sun-time-item">
+                <div class="sun-time-icon"><i class="fas fa-sun"></i></div>
+                <div class="sun-time-label">${currentLang === 'fa' ? 'طلوع' : 'Sunrise'}</div>
+                <div class="sun-time-value">${sunrise}</div>
+            </div>
+            
+            <div class="sun-time-item">
+                <div class="sun-time-icon"><i class="fas fa-moon"></i></div>
+                <div class="sun-time-label">${currentLang === 'fa' ? 'غروب' : 'Sunset'}</div>
+                <div class="sun-time-value">${sunset}</div>
+            </div>
+        </div>
+        
+        <div class="sun-times-footer">
+            <span class="sun-times-date">${dateFormatted}</span>
+            <span class="sun-times-info">
+                <i class="fas fa-clock"></i>
+                ${currentLang === 'fa' ? 'طول روز:' : 'Day length:'} ${duration}
+            </span>
+        </div>
+    `;
+}
+
+/**
+ * Formats date for display in sun times card
+ */
+function formatDateForCard(date) {
+    if (currentCalendar === 'persian') {
+        const persianDate = gregorianToPersian(date);
+        const monthName = langData.months.fa[persianDate.month - 1];
+        return `${formatNumber(persianDate.day, currentLang)} ${monthName} ${formatNumber(persianDate.year, currentLang)}`;
+    } else {
+        const monthName = langData.months.en[date.getMonth()];
+        return `${monthName} ${formatNumber(date.getDate(), 'en')}, ${formatNumber(date.getFullYear(), 'en')}`;
+    }
+}
+
+/**
+ * Formats time based on language
+ */
+function formatTime(date, lang) {
+    const options = { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: lang === 'en'
+    };
+    
+    return date.toLocaleTimeString(lang === 'fa' ? 'fa-IR' : 'en-US', options);
+}
+
+/**
+ * Updates sun times display for selected day
+ */
+function updateSunTimesForSelectedDay(year, month, day) {
+    if (!cities[currentCity]) {
+        console.warn('⚠️ Current city not found for sun times');
+        return;
+    }
+    
+    let date;
+    
+    // Convert to Gregorian date for calculation
+    if (currentCalendar === 'persian') {
+        date = persianToGregorian({year, month, day});
+    } else {
+        date = new Date(year, month - 1, day);
+    }
+    
+    const sunTimes = getSunTimes(currentCity, date);
+    const sunriseTime = formatTime(sunTimes.sunrise, currentLang);
+    const sunsetTime = formatTime(sunTimes.sunset, currentLang);
+    
+    // Calculate day duration
+    const dayDuration = calculateDayDuration(sunTimes.sunrise, sunTimes.sunset);
+    
+    // Update the card
+    updateSunTimesCard(sunriseTime, sunsetTime, dayDuration, date);
+}
+
+/**
+ * Loads cities data from JSON file
+ */
+async function loadCitiesData() {
+    try {
+        const response = await fetch(`${BASE_PATH}/assets/data/cities.json`);
+        cities = await response.json();
+        console.log('✅ Cities data loaded successfully');
+        
+        // Don't initialize city selection here - it will be initialized when settings page loads
+        console.log('🏙️ Cities data loaded, city selection will be initialized when needed');
+        
+        // Update sun times display
+        updateSunTimesDisplay();        
+    } catch (error) {
+        console.error('❌ Error loading cities data:', error);
+    }
+}
+
+/**
+ * Initializes city selection dropdown from cities data
+ */
+function initializeCitySelection() {
+    const citySelect = document.getElementById('citySelect');
+    if (!citySelect) {
+        console.warn('⚠️ City select element not found - this is normal if not on settings page');
+        return;
+    }
+    
+    // Clear existing options
+    citySelect.innerHTML = '';
+    
+    // Add default option
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = currentLang === 'fa' ? 'انتخاب شهر' : 'Select City';
+    defaultOption.disabled = true;
+    defaultOption.selected = true;
+    citySelect.appendChild(defaultOption);
+    
+    // Add cities to dropdown from loaded data
+    Object.keys(cities).forEach(cityId => {
+        const city = cities[cityId];
+        const option = document.createElement('option');
+        option.value = cityId;
+        
+        // Use bilingual display
+        if (currentLang === 'fa') {
+            option.textContent = `${city.fa} (${city.en})`;
+        } else {
+            option.textContent = `${city.en} (${city.fa})`;
+        }
+        
+        option.setAttribute('data-city-id', cityId);
+        citySelect.appendChild(option);
+    });
+    
+    // Set current city
+    if (cities[currentCity]) {
+        citySelect.value = currentCity;
+    }
+    
+    console.log('✅ City selection initialized with', Object.keys(cities).length, 'cities');
+}
+
+// ======================= SUNRISE SUNSET TIMES =======================
+/**
+ * Calculate highly accurate sunrise and sunset times
+ * using Jean Meeus algorithm with height correction
+ * @param {string} cityId - City ID
+ * @param {Date} date - Gregorian date
+ * @returns {Object} - {sunrise: Date, sunset: Date}
+ */
+function getSunTimes(cityId, date) {
+    if (!cityId || !cities[cityId]) {
+        console.warn(`City "${cityId}" not found, using Tehran as default`);
+        cityId = 'tehran';
+    }
+
+    const city = cities[cityId];
+    const lat = city.lat;
+    const lng = city.lon;
+    const height = city.height || 0; // in meters
+
+    const rad = Math.PI / 180;
+    const deg = 180 / Math.PI;
+
+    // Day of the year
+    const start = new Date(date.getFullYear(), 0, 0);
+    const diff = date - start;
+    const oneDay = 1000 * 60 * 60 * 24;
+    const n = Math.floor(diff / oneDay);
+
+    // Mean longitude of the Sun
+    const L0 = (280.46646 + 0.9856474 * n) % 360;
+
+    // Mean anomaly
+    const M = (357.52911 + 0.98560028 * n) % 360;
+
+    // Ecliptic longitude
+    const C = 1.914602 * Math.sin(rad*M) + 0.019993 * Math.sin(rad*2*M) + 0.000289 * Math.sin(rad*3*M);
+    const lambda = L0 + C;
+
+    // Obliquity
+    const epsilon = 23.439 - 0.00000036 * n;
+
+    // Declination
+    const delta = Math.asin(Math.sin(rad*epsilon) * Math.sin(rad*lambda));
+
+    // Equation of time (in minutes)
+    const y = Math.tan(rad*(epsilon/2))**2;
+    const EoT = 4*deg*(y*Math.sin(2*rad*L0) - 2*0.0167*Math.sin(rad*M) + 4*0.0167*y*Math.sin(rad*M)*Math.cos(2*rad*L0) - 0.5*y**2*Math.sin(4*rad*L0) - 1.25*0.0167**2*Math.sin(2*rad*M));
+
+    // Zenith correction for refraction and height
+    const zenith = (90.833 + 0.0347 * Math.sqrt(height)) * rad;
+
+    // Latitude in radians
+    const latRad = lat * rad;
+
+    // Hour angle
+    const cosH = (Math.cos(zenith) - Math.sin(latRad)*Math.sin(delta)) / (Math.cos(latRad)*Math.cos(delta));
+    if (cosH > 1) return { sunrise: null, sunset: null }; // sun never rises
+    if (cosH < -1) return { sunrise: null, sunset: null }; // sun never sets
+    const H = Math.acos(cosH); // in radians
+    const Hh = H * deg / 15; // in hours
+
+    // Solar noon in local time
+    const timezoneOffset = -date.getTimezoneOffset()/60;
+    const solarNoon = 12 - (lng/15) - (EoT/60) + timezoneOffset;
+
+    // Sunrise and sunset
+    const sunriseHour = solarNoon - Hh;
+    const sunsetHour  = solarNoon + Hh;
+
+    const sunrise = new Date(date);
+    const sunset = new Date(date);
+
+    sunrise.setHours(Math.floor(sunriseHour), Math.floor((sunriseHour%1)*60), Math.floor((((sunriseHour%1)*60)%1)*60));
+    sunset.setHours(Math.floor(sunsetHour), Math.floor((sunsetHour%1)*60), Math.floor((((sunsetHour%1)*60)%1)*60));
+
+    return { sunrise, sunset };
 }
 
 // ======================= UI HELPER FUNCTIONS =======================

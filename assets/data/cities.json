@@ -1,0 +1,182 @@
+{
+  "tehran": {
+    "fa": "تهران",
+    "en": "Tehran",
+    "lat": 35.6892,
+    "lon": 51.389
+  },
+  "mashhad": {
+    "fa": "مشهد",
+    "en": "Mashhad",
+    "lat": 36.2972,
+    "lon": 59.6067
+  },
+  "isfahan": {
+    "fa": "اصفهان",
+    "en": "Isfahan",
+    "lat": 32.6546,
+    "lon": 51.668
+  },
+  "tabriz": {
+    "fa": "تبریز",
+    "en": "Tabriz",
+    "lat": 38.08,
+    "lon": 46.2919
+  },
+  "shiraz": {
+    "fa": "شیراز",
+    "en": "Shiraz",
+    "lat": 29.5918,
+    "lon": 52.5837
+  },
+  "karaj": {
+    "fa": "کرج",
+    "en": "Karaj",
+    "lat": 35.8355,
+    "lon": 50.9916
+  },
+  "ahvaz": {
+    "fa": "اهواز",
+    "en": "Ahvaz",
+    "lat": 31.3183,
+    "lon": 48.6706
+  },
+  "qom": {
+    "fa": "قم",
+    "en": "Qom",
+    "lat": 34.6416,
+    "lon": 50.8746
+  },
+  "kermanshah": {
+    "fa": "کرمانشاه",
+    "en": "Kermanshah",
+    "lat": 34.3142,
+    "lon": 47.065
+  },
+  "rasht": {
+    "fa": "رشت",
+    "en": "Rasht",
+    "lat": 37.2682,
+    "lon": 49.5891
+  },
+  "zahedan": {
+    "fa": "زاهدان",
+    "en": "Zahedan",
+    "lat": 29.4963,
+    "lon": 60.8629
+  },
+  "kerman": {
+    "fa": "کرمان",
+    "en": "Kerman",
+    "lat": 30.2839,
+    "lon": 57.0834
+  },
+  "sari": {
+    "fa": "ساری",
+    "en": "Sari",
+    "lat": 36.5633,
+    "lon": 53.0601
+  },
+  "hamedan": {
+    "fa": "همدان",
+    "en": "Hamedan",
+    "lat": 34.7983,
+    "lon": 48.515
+  },
+  "arak": {
+    "fa": "اراک",
+    "en": "Arak",
+    "lat": 34.0917,
+    "lon": 49.6892
+  },
+  "urmia": {
+    "fa": "ارومیه",
+    "en": "Urmia",
+    "lat": 37.5553,
+    "lon": 45.0728
+  },
+  "bandar-abbas": {
+    "fa": "بندرعباس",
+    "en": "Bandar Abbas",
+    "lat": 27.1832,
+    "lon": 56.2666
+  },
+  "birjand": {
+    "fa": "بیرجند",
+    "en": "Birjand",
+    "lat": 32.8713,
+    "lon": 59.2042
+  },
+  "bojnurd": {
+    "fa": "بجنورد",
+    "en": "Bojnurd",
+    "lat": 37.4747,
+    "lon": 57.329
+  },
+  "bushehr": {
+    "fa": "بوشهر",
+    "en": "Bushehr",
+    "lat": 28.9234,
+    "lon": 50.8203
+  },
+  "khorramabad": {
+    "fa": "خرم‌آباد",
+    "en": "Khorramabad",
+    "lat": 33.4878,
+    "lon": 48.3558
+  },
+  "gorgan": {
+    "fa": "گرگان",
+    "en": "Gorgan",
+    "lat": 36.8416,
+    "lon": 54.4436
+  },
+  "sanandaj": {
+    "fa": "سنندج",
+    "en": "Sanandaj",
+    "lat": 35.3144,
+    "lon": 46.9993
+  },
+  "qazvin": {
+    "fa": "قزوین",
+    "en": "Qazvin",
+    "lat": 36.2688,
+    "lon": 50.0041
+  },
+  "yazd": {
+    "fa": "یزد",
+    "en": "Yazd",
+    "lat": 31.8974,
+    "lon": 54.3675
+  },
+  "ardabil": {
+    "fa": "اردبیل",
+    "en": "Ardabil",
+    "lat": 38.2465,
+    "lon": 48.293
+  },
+  "shahrekord": {
+    "fa": "شهرکرد",
+    "en": "Shahrekord",
+    "lat": 32.3267,
+    "lon": 50.8645
+  },
+  "ilam": {
+    "fa": "ایلام",
+    "en": "Ilam",
+    "lat": 33.6375,
+    "lon": 46.4227
+  },
+  "yasuj": {
+    "fa": "یاسوج",
+    "en": "Yasuj",
+    "lat": 30.6683,
+    "lon": 51.587
+  },
+  "zanjan": {
+    "fa": "زنجان",
+    "en": "Zanjan",
+    "lat": 36.6736,
+    "lon": 48.4787
+  }
+}

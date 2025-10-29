@@ -1886,6 +1886,161 @@ body.offline-page main:not(.offline-container) {
     right: calc(100% - var(--toggle-handle-size) - var(--toggle-handle-margin));
 }
 
+
+/* ======================= SUNRISE/SUNSET CARD STYLES ======================= */
+.sun-times-card {
+    width: 100%;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    min-height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: var(--text-color);
+    background: var(--card-bg);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--shadow);
+    transition: var(--transition);    
+    animation: fadeIn .5s ease-in-out;
+}
+
+.sun-times-container {
+    width: 100%;
+    text-align: center;
+}
+
+.sun-times-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sun-times-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.sun-times-city {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    background: rgba(var(--primary-color-rgb), 0.1);
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+}
+
+.sun-times-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.sun-time-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(var(--primary-color-rgb), 0.05);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.sun-time-item:hover {
+    background: rgba(var(--primary-color-rgb), 0.1);
+    transform: translateY(-2px);
+}
+
+.sun-time-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.sun-time-icon .fas.fa-sun {
+    color: #FFD700;
+}
+
+.sun-time-icon .fas.fa-moon {
+    color: #4A6FA5;
+}
+
+.sun-time-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.3rem;
+}
+
+.sun-time-value {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.sun-time-duration {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 0.3rem;
+}
+
+.sun-times-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.sun-times-date {
+    font-weight: 500;
+}
+
+.sun-times-info {
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.sun-times-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    color: var(--warning-color);
+}
+
+.error-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.7;
+}
+
+.error-message h5 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+}
+
+.error-message p {
+    margin: 0;
+    opacity: 0.8;
+    font-size: 0.9rem;
+}
+
+.sun-times-header .sun-times-city {
+    color: var(--warning-color);
+}
+
 /* ======================= RESPONSIVE STYLES ======================= */
 
 @media (max-width: 768px) {    
@@ -2268,7 +2423,30 @@ body.offline-page main:not(.offline-container) {
     
     .about-projects {
         grid-template-columns: 1fr;
-    }    
+    }
+
+    .sun-times-content {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+
+    .sun-time-item {
+        padding: 0.8rem;
+    }
+
+    .sun-time-icon {
+        font-size: 1.7rem;
+    }
+
+    .sun-time-value {
+        font-size: 1.1rem;
+    }
+
+    .sun-times-footer {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
 }
 
 /* ======================= RESPONSIVE STYLES ======================= */
