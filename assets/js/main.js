@@ -132,6 +132,7 @@ let showSecondaryCalendar = localStorage.getItem('showSecondaryCalendar') !== 'f
 let showApiEvents = localStorage.getItem('showApiEvents') !== 'false';
 let apiEventsCalendar = localStorage.getItem('apiEventsCalendar') || 'both';
 let activeApiEventsTab = localStorage.getItem('activeApiEventsTab') || 'main';
+let showDailyEvents = localStorage.getItem('showDailyEvents') !== 'false';
 let langData = {};
 let deferredPrompt;
 const longPressDuration = 500;
@@ -141,12 +142,13 @@ let eventsToShow = null;
 let cities = {};
 let currentCity = localStorage.getItem('selectedCity') || 'tehran';
 let defaultFooterExpanded = true;
+let Tab = 'main';
 
 // ======================= DOM ELEMENTS =======================
 let persianDay, persianMonth, persianFullDate;
 let gregorianDay, gregorianMonth, gregorianFullDate;
 let dailyEventsContainer;
-let apiEventsSection, apiEventsToggle, apiEventsCalendarSelect;
+let apiEventsSection, apiEventsToggle, apiEventsCalendarSelect, dailyEventsToggle;
 let footerToggle, footerContainer;
 
 let themeToggle, langToggle, mobileMenuBtn, navMenu;
@@ -532,7 +534,11 @@ function setupSettingsPage() {
     }
     if (apiEventsCalendarSelect) {
         apiEventsCalendarSelect.addEventListener('change', handleApiEventsCalendarChange);
-    }   
+    }  
+    if (dailyEventsToggle) {
+        dailyEventsToggle.checked = showDailyEvents;
+        dailyEventsToggle.addEventListener('change', handleDailyEventsToggle);
+    }    
     
     const resetBtn = document.getElementById('resetSettings');
     if (resetBtn) {
@@ -1345,6 +1351,7 @@ function resetSettings() {
         localStorage.removeItem('showApiEvents');
         localStorage.removeItem('apiEventsCalendar');
         localStorage.removeItem('activeApiEventsTab');
+        localStorage.removeItem('showDailyEvents');        
         localStorage.removeItem('calendarEvents');
         localStorage.setItem('selectedCity', 'tehran');
 
@@ -1352,13 +1359,16 @@ function resetSettings() {
         currentCalendar = 'persian';
         localStorage.setItem('showSecondaryCalendar', 'true');
         localStorage.setItem('showApiEvents', 'false');
+        localStorage.setItem('showDailyEvents', 'false');        
         apiEventsCalendar = 'both';
         activeApiEventsTab = 'main';
+        showDailyEvents = false;
         currentCity = 'tehran';
         events = {};
         
         if (themeSelect) themeSelect.value = 'default';
         if (apiEventsToggle) apiEventsToggle.checked = false;
+        if (dailyEventsToggle) dailyEventsToggle.checked = false;
         
         // Update API events section visibility immediately
         updateApiEventsSectionVisibility();
@@ -1453,6 +1463,7 @@ function initializeDOMElements() {
     apiEventsSection = document.getElementById('apiEvents');    
     apiEventsToggle = document.getElementById('apiEventsToggle');
     apiEventsCalendarSelect = document.getElementById('apiEventsCalendarSelect');
+    dailyEventsToggle = document.getElementById('dailyEventsToggle');
 
     footerToggle = document.getElementById('footerToggle');
     footerContainer = document.getElementById('footerContainer');
@@ -2129,6 +2140,8 @@ function highlightToday() {
         }
     }
     
+    updateCalendarCards(todayKey);
+    
     // Update events display
     dailyEventsCard(todayKey);
 }
@@ -2166,6 +2179,11 @@ function handleDayClick(dayElement, year, month, day) {
     
     // Update sun times for selected day
     updateSunTimesForSelectedDay(year, month, day);
+    
+    // If showDailyEvents is enabled, refresh API events to show selected day's events
+    if (showDailyEvents && showApiEvents && apiEvents) {
+        displayTabEvents(activeApiEventsTab, apiEvents);
+    }    
 }
 
 /**
@@ -2393,6 +2411,11 @@ function updateCalendarCards(dateKey = null) {
     }
     
     calendarCards();
+    
+    // If showDailyEvents is enabled, refresh API events
+    if (showDailyEvents && showApiEvents) {
+        loadApiEvents();
+    }    
 }
 
 /**
@@ -2609,7 +2632,10 @@ function updateAPIEventsText() {
         if (apiEventsCalendarSelect.options[0]) apiEventsCalendarSelect.options[0].text = langData.ui.bothCalendars || 'هر دو تقویم';
         if (apiEventsCalendarSelect.options[1]) apiEventsCalendarSelect.options[1].text = langData.ui.persian || 'فارسی';
         if (apiEventsCalendarSelect.options[2]) apiEventsCalendarSelect.options[2].text = langData.ui.gregorian || 'میلادی';
-    }    
+    }  
+    
+    const dailyEventsLabel = document.querySelector('label[for="dailyEventsToggle"]');
+    if (dailyEventsLabel) dailyEventsLabel.textContent = langData.ui.showDailyEvents || 'نمایش رویدادهای روز جاری';    
 }
 
 /**
@@ -2982,7 +3008,7 @@ function removeDuplicateEvents(eventsByDay) {
 }
 
 /**
- * Creates API events section
+ * Creates API events section with daily events filtering support
  * @param {Object} eventsData - Events data
  * @param {string} calendarTitle - Calendar title
  * @param {string} rangeInfoText - Range information text (optional)
@@ -2997,9 +3023,26 @@ function createApiEventsSection(eventsData, calendarTitle, rangeInfoText = '') {
     const header = document.createElement('div');
     header.className = 'api-events-section-header';
     
-    const totalEvents = eventsData.total_events || 0;
-    const fixedCount = eventsData.fixed_events_count || 0;
-    const floatingCount = eventsData.floating_events_count || 0;
+    // Filter events if showDailyEvents is enabled
+    let filteredEventsData = { ...eventsData };
+    let eventsCount = eventsData.total_events || 0;
+    
+    if (showDailyEvents) {
+        // Filter events to show only today's events
+        const todayEvents = filterTodayApiEvents(eventsData);
+        filteredEventsData.events_by_day = todayEvents;
+        eventsCount = Object.keys(todayEvents).length > 0 ? 
+            todayEvents[Object.keys(todayEvents)[0]].length : 0;
+        
+        // Update counts for display
+        filteredEventsData.total_events = eventsCount;
+        filteredEventsData.fixed_events_count = todayEvents[Object.keys(todayEvents)[0]]?.filter(e => e.type === 'fixed').length || 0;
+        filteredEventsData.floating_events_count = todayEvents[Object.keys(todayEvents)[0]]?.filter(e => e.type === 'floating').length || 0;
+    }
+    
+    const totalEvents = filteredEventsData.total_events || 0;
+    const fixedCount = filteredEventsData.fixed_events_count || 0;
+    const floatingCount = filteredEventsData.floating_events_count || 0;
     
     const calendarType = eventsData.calendar || 'persian';
     const calendarName = calendarType === 'persian' 
@@ -3009,11 +3052,17 @@ function createApiEventsSection(eventsData, calendarTitle, rangeInfoText = '') {
     const formattedCount = formatNumber(totalEvents, currentLang);
     const formattedFixed = formatNumber(fixedCount, currentLang);
     const formattedFloating = formatNumber(floatingCount, currentLang);
-
+    
     header.innerHTML = `
         <div>
             <h4>${calendarName}</h4>
             <small style="opacity: 0.9;">${calendarTitle}</small>
+            <div style="margin-top: 5px; font-size: 0.8em;">
+                <i class="fas ${showDailyEvents ? 'fa-calendar-day' : 'fa-calendar-alt'}"></i>
+                ${showDailyEvents
+                    ? (currentLang === 'fa' ? 'رویدادهای روز جاری' : 'Current Day Events')
+                    : (currentLang === 'fa' ? 'رویدادهای ماه جاری' : 'Current Month Events')}
+            </div>
         </div>
         <div class="meta-right">
             <span class="api-events-count">${formattedCount} ${currentLang === 'fa' ? 'رویداد' : 'events'}</span>
@@ -3027,11 +3076,11 @@ function createApiEventsSection(eventsData, calendarTitle, rangeInfoText = '') {
     const eventsContainer = document.createElement('div');
     eventsContainer.className = 'api-events-container-inner';
 
-    // Use events_by_day that was processed in processApiEvents
-    const eventsByDay = eventsData.events_by_day || {};
+    // Use filtered events data
+    const eventsByDay = filteredEventsData.events_by_day || {};
 
-    // Add range info at the top if available
-    if (rangeInfoText) {
+    // Add range info at the top if available AND daily view is disabled
+    if (rangeInfoText && !showDailyEvents) {
         const rangeInfoElement = document.createElement('div');
         rangeInfoElement.className = 'api-events-range-info';
         rangeInfoElement.innerHTML = `
@@ -3069,15 +3118,99 @@ function createApiEventsSection(eventsData, calendarTitle, rangeInfoText = '') {
     } else {
         const noEvents = document.createElement('div');
         noEvents.className = 'no-api-events';
-        noEvents.textContent = currentLang === 'fa' ? 'هیچ رویدادی برای این بازه زمانی وجود ندارد' : 'No events found for this date range';
-        noEvents.style.textAlign = 'center';
-        noEvents.style.padding = '2rem';
-        noEvents.style.color = 'var(--text-secondary)';
+        noEvents.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                <div style="font-size: 2.5rem; opacity: 0.5; margin-bottom: 0.5rem;">
+                    <i class="fas ${showDailyEvents ? 'fa-calendar-day' : 'fa-calendar-alt'}"></i>
+                </div>
+                <div style="font-size: 0.95rem;">
+                    ${showDailyEvents 
+                        ? (currentLang === 'fa' ? 'هیچ رویدادی برای امروز وجود ندارد' : 'No events found for today')
+                        : (currentLang === 'fa' ? 'هیچ رویدادی برای این بازه زمانی وجود ندارد' : 'No events found for this date range')}
+                </div>
+            </div>
+        `;
         eventsContainer.appendChild(noEvents);
     }
 
     section.appendChild(eventsContainer);
     return section;
+}
+    
+/**
+ * Filters API events to show only today's events
+ * @param {Object} eventsData - Events data from API
+ * @returns {Object} Filtered events by day
+ */
+function filterTodayApiEvents(eventsData) {
+    const todayEvents = {};
+    
+    // Get today's date based on the calendar type of this events data
+    const calendarType = eventsData.calendar || 'persian';
+    let todayDay, todayMonth, todayYear;
+    
+    if (calendarType === 'persian') {
+        todayDay = currentPersianDate.day;
+        todayMonth = currentPersianDate.month;
+        todayYear = currentPersianDate.year;
+    } else {
+        todayDay = currentDate.getDate();
+        todayMonth = currentDate.getMonth() + 1;
+        todayYear = currentDate.getFullYear();
+    }
+    
+    const eventsByMonth = eventsData.events_by_month || {};
+    const eventsByDay = eventsData.events_by_day || {};
+    
+    console.log('🔍 Filtering events for:', {
+        calendarType,
+        todayDate: `${todayYear}/${todayMonth}/${todayDay}`,
+        eventsByMonthKeys: Object.keys(eventsByMonth),
+        eventsByDayKeys: Object.keys(eventsByDay)
+    });
+    
+    // Handle different data structures based on calendar type
+    if (Tab === 'main') {
+        // For Persian calendar: events_by_day uses simple day numbers as keys
+        Object.keys(eventsByDay).forEach(dayKey => {
+            const day = parseInt(dayKey);
+            
+            // Check if this day matches today's day
+            if (day === todayDay) {
+                todayEvents[dayKey] = eventsByDay[dayKey];
+            }
+        });
+        
+        // Also check events_by_month structure for Persian calendar
+        if (eventsByMonth[todayMonth] && eventsByMonth[todayMonth][todayDay]) {
+            const dateKey = todayDay.toString();
+            todayEvents[dateKey] = eventsByMonth[todayMonth][todayDay];
+        }
+        
+    } else {
+        // For Gregorian calendar: events_by_day uses "M/D" format as keys
+        Object.keys(eventsByDay).forEach(dateKey => {
+            const [month, day] = dateKey.split('/').map(Number);
+            
+            // Check if this event matches today's date
+            if (month === todayMonth && day === todayDay) {
+                todayEvents[dateKey] = eventsByDay[dateKey];
+            }
+        });
+        
+        // Also check events_by_month structure for Gregorian calendar
+        if (eventsByMonth[todayMonth] && eventsByMonth[todayMonth][todayDay]) {
+            const dateKey = `${todayMonth}/${todayDay}`;
+            todayEvents[dateKey] = eventsByMonth[todayMonth][todayDay];
+        }
+    }
+    
+    console.log('✅ Filtered today events result:', {
+        foundEvents: Object.keys(todayEvents).length,
+        todayEvents
+    });
+    
+    return todayEvents;
 }
 
 /**
@@ -3137,6 +3270,7 @@ function createApiEventElement(event, day, calendarType) {
     
     const dayInfo = document.createElement('span');
     dayInfo.className = 'api-event-day';
+        
     const monthNameText = eventsToShow.range ? `(${monthName})` : monthName
     if (currentLang === 'fa') {
         dayInfo.textContent = `${formattedDay} ${monthNameText}`;
@@ -3176,6 +3310,7 @@ function createApiEventElement(event, day, calendarType) {
 
     return eventElement;
 }
+
 
 /**
  * Creates dynamic API events tabs based on apiEventsCalendar setting
@@ -3293,6 +3428,7 @@ function switchApiEventsTab(tabId) {
         activeTab.classList.add('active');
         activePane.classList.add('active');
         activeApiEventsTab = tabId;
+        Tab = tabId;
         localStorage.setItem('activeApiEventsTab', tabId);
         
         // Load events for the active tab if not already loaded
@@ -3349,7 +3485,7 @@ function displayTabEvents(tabId, eventsData) {
             isRangeData = true;
             
             // Generate range info text for Persian secondary calendar
-            if (eventsToShow.range) {
+            if (eventsToShow.range && !showDailyEvents) {
                 const start = formatNumber(eventsToShow.range.start, currentLang);
                 const end = formatNumber(eventsToShow.range.end, currentLang);
                 rangeInfoText = currentLang === 'fa' 
@@ -3368,7 +3504,7 @@ function displayTabEvents(tabId, eventsData) {
             isRangeData = true;
             
             // Generate range info text for Gregorian secondary calendar
-            if (eventsToShow.range) {
+            if (eventsToShow.range && !showDailyEvents) {
                 const start = formatNumber(eventsToShow.range.start, 'en');
                 const end = formatNumber(eventsToShow.range.end, 'en');
                 rangeInfoText = currentLang === 'fa' 
@@ -3393,6 +3529,7 @@ function displayTabEvents(tabId, eventsData) {
         `;
     }
 }
+
 /**
  * Updates API events tabs when calendar type changes
  */
@@ -3544,6 +3681,21 @@ function handleApiEventsCalendarChange() {
     
     // Force reload of API events
     loadApiEvents();
+    
+    showToast(langData.ui.settingsSaved || 'تنظیمات ذخیره شد');
+}
+
+/**
+ * Handles daily events toggle change
+ */
+function handleDailyEventsToggle() {
+    showDailyEvents = dailyEventsToggle.checked;
+    localStorage.setItem('showDailyEvents', showDailyEvents);
+    
+    // Update API events display to reflect changes
+    if (showApiEvents && apiEvents) {
+        displayTabEvents(activeApiEventsTab, apiEvents);
+    }
     
     showToast(langData.ui.settingsSaved || 'تنظیمات ذخیره شد');
 }
