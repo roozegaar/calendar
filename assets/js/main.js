@@ -3773,8 +3773,8 @@ function updateSunTimesCard(sunrise, sunset, duration, date) {
         <div class="sun-times-header">
             <h4 class="sun-times-title">${currentLang === 'fa' ? 'طلوع و غروب خورشید' : 'Sunrise & Sunset'}</h4>
             <span class="sun-times-city">
-                <i class="fas fa-map-marker-alt"></i>
-                ${cityName}</span>
+                ${cityName}
+                <i class="fas fa-map-marker-alt"></i></span>
         </div>
         
         <div class="sun-times-content">
@@ -3797,8 +3797,8 @@ function updateSunTimesCard(sunrise, sunset, duration, date) {
                 ${dateFormatted}
             </span>
             <span class="sun-times-info">
-                <i class="fas fa-clock"></i>
                 ${currentLang === 'fa' ? 'طول روز:' : 'Day length:'} ${duration}
+                <i class="fas fa-clock"></i>				
             </span>
         </div>
     `;
