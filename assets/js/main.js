@@ -102,9 +102,7 @@ function initializeApp() {
             
             // Initialize mobile menu
             new MobileMenu();
-            
-            initializeFooterToggle();
-            
+                        
             console.log('✅ App initialized successfully!');
                         
         } catch (error) {
@@ -187,6 +185,8 @@ async function loadAllComponents() {
     
     // After all components are loaded, initialize DOM elements
     initializeDOMElements();
+    
+    initializeFooterToggle();    
 }
 
 function loadComponent(id, url) {
@@ -1390,6 +1390,7 @@ function updateActiveNav() {
         navItems[activeIndex].classList.add('active');
     }
 }
+
 /**
  * Initialize all DOM elements after components are loaded
  */
@@ -4063,10 +4064,7 @@ function updateFooterState(isExpanded, toggleBtn, container, footer, shouldScrol
         footer.classList.add('expanded');
         
         // Update button text
-        const toggleText = toggleBtn.querySelector('.toggle-text');
-        if (toggleText) {
-            toggleText.textContent = langData.ui.hideFooter || 'بستن پاورقی';
-        }
+        updateFooterToggleText();
         
         // Only scroll when user explicitly clicks the toggle button
         if (shouldScroll) {
@@ -4087,10 +4085,7 @@ function updateFooterState(isExpanded, toggleBtn, container, footer, shouldScrol
         footer.classList.add('collapsed');
         
         // Update button text
-        const toggleText = toggleBtn.querySelector('.toggle-text');
-        if (toggleText) {
-            toggleText.textContent = langData.ui.showFooter || 'نمایش پاورقی';
-        }
+        updateFooterToggleText();
         
         // Only adjust scroll position when user explicitly collapses
         if (shouldScroll) {
@@ -4108,20 +4103,19 @@ function updateFooterState(isExpanded, toggleBtn, container, footer, shouldScrol
 }
 
 /**
- * Updates footer toggle text based on language
+ * Updates footer toggle tooltip (icon title) based on language
  */
 function updateFooterToggleText() {
     if (!footerToggle) return;
-    
-    const toggleText = footerToggle.querySelector('.toggle-text');
+
+    const icon = footerToggle.querySelector('.toggle-icon');
     const isExpanded = footerToggle.getAttribute('aria-expanded') === 'true';
     
-    if (toggleText) {
-        if (isExpanded) {
-            toggleText.textContent = langData.ui.hideFooter || 'بستن پاورقی';
-        } else {
-            toggleText.textContent = langData.ui.showFooter || 'نمایش پاورقی';
-        }
+    const hideText = langData?.ui?.hideFooter || 'بستن پاورقی';
+    const showText = langData?.ui?.showFooter || 'نمایش پاورقی';
+    
+    if (icon) {
+        icon.title = isExpanded ? hideText : showText;
     }
 }
 
