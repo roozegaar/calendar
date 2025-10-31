@@ -187,7 +187,7 @@ nav {
 .nav-menu {
     display: flex;
     list-style: none;
-    gap: 10px;
+    gap: 5px;
     padding: 0;
     margin: 0;
     position: absolute;
@@ -210,11 +210,6 @@ nav {
 
 .nav-menu li a:hover {
     background-color: var(--hover-color);
-    transform: translateX(5px);
-}
-
-[dir="rtl"] .nav-menu li a:hover {
-    transform: translateX(-5px);
 }
 
 .nav-menu li a i {
@@ -259,14 +254,20 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
+    padding: 5px;
     background-color: var(--primary-color);
     color: white;
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    box-shadow: var(--shadow);
 }
 
+#currentMonthYear {
+    padding: .5rem; 
+}
 .calendar-nav {
     display: flex;
-    gap: 10px;
+    gap: 5px;
 }
 
 .calendar-nav button {
@@ -275,7 +276,7 @@ nav {
     color: white;
     font-size: 1.4rem;
     cursor: pointer;
-    padding: 0.4rem 0.6rem;
+    padding: 0.5rem;
     transition: color 0.2s ease, transform 0.2s ease;
     transform: var(--button-transform, scaleX(1));
 }
@@ -283,6 +284,10 @@ nav {
 .calendar-nav button:hover {
     color: var(--secondary-color);
     transform: var(--button-transform, scaleX(1)) scale(1.1);
+}
+
+.calendar-nav button:focus {
+    outline: none;
 }
 
 [dir="rtl"] .calendar-nav button {
@@ -294,7 +299,7 @@ nav {
 }
 
 .calendar-body {
-    padding: 20px;
+    padding: 5px;
 }
 
 .weekdays {
@@ -302,9 +307,9 @@ nav {
     grid-template-columns: repeat(7, 1fr);
     text-align: center;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     border-bottom: 1px solid var(--border-color);
-    padding-bottom: 10px;
+    padding-bottom: 5px;
 }
 
 .days-grid {
@@ -321,9 +326,19 @@ nav {
     padding: 10px 5px;
     border-radius: 5px;
     cursor: pointer;
-    transition: all 0.3s ease;
     background-color: var(--day-bg);
     color: var(--text-color);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+.empty-day {
+    opacity: 0;
+    pointer-events: none;
+    cursor: none;
 }
 
 .day:hover {
@@ -343,6 +358,11 @@ nav {
     background-color: var(--primary-color);
     color: white;
     border-color: var(--primary-color);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    animation: fadeIn .5s ease-in-out;        
 }
 
 .day.has-event {
@@ -395,7 +415,7 @@ nav {
 .calendar-card {
     flex: 1 1 45%;
     border-radius: 10px;
-    padding: 20px;
+    padding: 5px;
     text-align: center;
     color: var(--text-color);
     background: var(--card-bg);
@@ -425,12 +445,13 @@ nav {
     opacity: 0.7;
     color: var(--text-color);
     line-height: 0;
+    padding: .5rem;
 }
 
 .personal-calendar-card {
     width: 100%;
     border-radius: 10px;
-    padding: 20px;
+    padding: 10px;
     margin-top: 20px;
     min-height: 120px;
     display: flex;
@@ -909,11 +930,14 @@ nav {
 .api-events-section-header {
     background: var(--primary-color);
     height: 80px;
-    padding: 1rem;
+    padding: .5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: white;
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    box-shadow: var(--shadow);      
 }
 
 .api-events-section-header h4 {
@@ -1045,6 +1069,9 @@ nav {
 .api-tab.active {
     background: var(--primary-color);
     color: white;
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    box-shadow: var(--shadow);    
 }
 
 .api-tabs-content-wrapper {
@@ -1419,12 +1446,17 @@ nav {
 
 .modal-content {
     background-color: var(--day-bg);
-    padding: 20px;
+    padding: 10px;
     border-radius: 10px;
     width: 90%;
     max-width: 500px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     color: var(--text-color);
+    background: var(--card-bg);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--shadow);
+    transition: var(--transition);
 }
 
 .modal-header {
@@ -1457,7 +1489,6 @@ nav {
 .event-form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
 }
 
 .form-group {
@@ -1520,12 +1551,19 @@ nav {
 }
 
 .event-item {
-    padding: 10px;
-    border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: var(--text-color);
+    color: var(--text-color); 
+    margin: 5px;
+    padding: .5rem;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s ease;
+    border-radius: 10px;
+}
+
+.event-item:hover {
+    background: var(--hover-color);
 }
 
 .event-actions button {
@@ -1957,7 +1995,7 @@ body.offline-page main:not(.offline-container) {
 .sun-times-card {
     width: 100%;
     border-radius: 10px;
-    padding: 10px;
+    padding: .5rem;
     margin-top: 20px;
     min-height: 120px;
     display: flex;
@@ -2179,12 +2217,10 @@ body.offline-page main:not(.offline-container) {
     }
 
     .nav-menu li a {
-        padding: 15px;
-        margin: 2px 0;
         border-radius: 8px;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 5px;
         justify-content: flex-start;
         font-size: 1rem;
     }
@@ -2350,7 +2386,7 @@ body.offline-page main:not(.offline-container) {
 
     .calendar-header {
         flex-direction: column;
-        gap: 15px;
+        gap: 5px;
     }
 
     .calendar-nav {

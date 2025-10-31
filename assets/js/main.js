@@ -470,6 +470,7 @@ function setupSettingsPage() {
     // Ensure proper initialization from localStorage
     showApiEvents = localStorage.getItem('showApiEvents') !== 'false';
     apiEventsCalendar = localStorage.getItem('apiEventsCalendar') || 'both';
+    showDailyEvents = localStorage.getItem('showDailyEvents') !== 'false';
     
     console.log('Settings loaded - Show API Events:', showApiEvents);
     console.log('Settings loaded - API Events Calendar:', apiEventsCalendar);
@@ -1362,7 +1363,6 @@ function resetSettings() {
         localStorage.setItem('showDailyEvents', 'false');        
         apiEventsCalendar = 'both';
         activeApiEventsTab = 'main';
-        showDailyEvents = false;
         currentCity = 'tehran';
         events = {};
         
@@ -1796,12 +1796,7 @@ function renderDays() {
 function renderEmptyDays(count) {
     for (let i = 0; i < count; i++) {
         const emptyDay = document.createElement('div');
-        
-		emptyDay.classList.add('day', 'empty-day');
-        emptyDay.style.pointerEvents = 'none';
-        emptyDay.style.cursor = 'default';
-        emptyDay.style.opacity = '0';
-        
+		emptyDay.classList.add('day', 'empty-day');        
         daysGrid.appendChild(emptyDay);
     }
 }
@@ -2323,11 +2318,6 @@ function renderEvents(container, dateKey) {
 function createEventItem(event, dateKey) {
     const eventItem = document.createElement('div');
     eventItem.classList.add('event-item');
-    eventItem.style.display = 'flex';
-    eventItem.style.justifyContent = 'space-between';
-    eventItem.style.alignItems = 'center';
-    eventItem.style.padding = '8px';
-    eventItem.style.borderBottom = '1px solid #eee';
     
     const eventInfo = document.createElement('div');
     eventInfo.innerHTML = `<strong>${event.title}</strong>`;
