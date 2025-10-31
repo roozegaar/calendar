@@ -308,8 +308,14 @@ nav {
     text-align: center;
     font-weight: bold;
     margin-bottom: 5px;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 5px;
+    border-radius: 10px 10px 0 0;
+    background-color: var(--day-bg);
+    color: var(--text-color);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--shadow);
+    transition: var(--transition);
 }
 
 .days-grid {
@@ -324,7 +330,7 @@ nav {
     justify-content: space-between;
     align-items: center;
     padding: 10px 5px;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
     background-color: var(--day-bg);
     color: var(--text-color);
@@ -415,7 +421,7 @@ nav {
 .calendar-card {
     flex: 1 1 45%;
     border-radius: 10px;
-    padding: 5px;
+    padding: 1rem;
     text-align: center;
     color: var(--text-color);
     background: var(--card-bg);
