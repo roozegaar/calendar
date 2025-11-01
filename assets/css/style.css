@@ -1683,7 +1683,6 @@ nav {
     max-height: 1000px !important;
     opacity: 1 !important;
     visibility: visible;
-    padding: 20px 0;    
     transition: max-height 0.4s ease, opacity 0.4s ease;
 }
 
