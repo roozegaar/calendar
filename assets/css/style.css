@@ -300,6 +300,11 @@ nav {
 
 .calendar-body {
     padding: 5px;
+    background: var(--card-bg);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    box-shadow: var(--shadow);
+    transition: var(--transition);
 }
 
 .weekdays {
