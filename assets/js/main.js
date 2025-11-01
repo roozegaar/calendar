@@ -1755,10 +1755,11 @@ function updateCalendarHeader() {
  */
 function renderWeekdays() {
     weekdays.innerHTML = '';
-    let days = currentCalendar === 'persian' ? langData.weekdays.fa : langData.weekdays.en;
+    const days = currentCalendar === 'persian' ? langData.weekdays.fa : langData.weekdays.en;
 
     days.forEach(d => {
         const div = document.createElement('div');
+        div.classList.add('weekday-cell');
         div.textContent = d;
         weekdays.appendChild(div);
     });
