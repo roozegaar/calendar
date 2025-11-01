@@ -308,14 +308,51 @@ nav {
     text-align: center;
     font-weight: bold;
     margin-bottom: 5px;
-    border-radius: 10px 10px 0 0;
+    border-radius: 10px;
     background-color: var(--day-bg);
     color: var(--text-color);
-    backdrop-filter: var(--blur);
-    -webkit-backdrop-filter: var(--blur);
     border: 1px solid var(--card-border);
     box-shadow: var(--shadow);
     transition: var(--transition);
+}
+
+.weekday-cell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 0;
+    line-height: 1;
+    font-size: 0.95rem;
+}
+
+.weekday-cell:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 15%;
+    bottom: 15%;
+    width: 1px;
+    background-color: var(--primary-color);
+    transform: scaleX(0.5);
+}
+
+[dir="rtl"] .weekday-cell {
+    line-height: 1.2;
+    padding-top: 2px;
+}
+
+[dir="ltr"] .weekday-cell {
+    padding-top: 5px;
+}
+
+[dir="rtl"] .weekday-cell:not(:last-child)::after {
+    left: 0;
+    transform-origin: left;
+}
+
+[dir="ltr"] .weekday-cell:not(:last-child)::after {
+    right: 0;
+    transform-origin: right;
 }
 
 .days-grid {
@@ -2549,10 +2586,6 @@ body.offline-page main:not(.offline-container) {
 
     html[dir="ltr"] nav {
         left: -100%;
-    }
-    
-    .days-grid {
-        gap: 2px;
     }
 
     .day {
