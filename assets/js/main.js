@@ -393,7 +393,7 @@ async function navigateTo(page) {
         
         if (page === 'calendar') {
             componentUrl = `${BASE_PATH}/assets/components/calendar.html`;
-            pageTitle = langData.ui.calendar || 'تقویم';
+            pageTitle = langData.ui.calendar || 'گاه‌شمار';
         } else if (page === 'settings') {
             componentUrl = `${BASE_PATH}/assets/components/settings.html`;
             pageTitle = langData.ui.settings || 'تنظیمات';
@@ -1499,7 +1499,7 @@ function setupNavigation() {
             e.preventDefault();
             
             const linkText = navLink.textContent.toLowerCase();
-            if (linkText.includes('calendar') || linkText.includes('تقویم')) {
+            if (linkText.includes('calendar') || linkText.includes('گاه‌شمار')) {
                 navigateTo('calendar');
             } else if (linkText.includes('settings') || linkText.includes('تنظیمات')) {
                 navigateTo('settings');
@@ -2579,7 +2579,7 @@ function updateLogoWithPageTitle(pageTitle) {
     const logoElement = document.querySelector('.logo');
     if (!logoElement) return;
     
-    const mainLogoText = langData.ui.logo || 'تقویم روزگار';
+    const mainLogoText = langData.ui.logo || 'گاه‌شمار روزگار';
     
     if (pageTitle && currentPage !== 'calendar') {
         // Show page title alongside logo
@@ -2617,10 +2617,10 @@ function updateAPIEventsText() {
     if (apiEventsLabel) apiEventsLabel.textContent = langData.ui.showApiEvents || 'نمایش رویدادهای API';
     
     const apiEventsCalendarLabel = document.querySelector('label[for="apiEventsCalendarSelect"]');
-    if (apiEventsCalendarLabel) apiEventsCalendarLabel.textContent = langData.ui.apiEventsCalendar || 'تقویم رویدادهای API';
+    if (apiEventsCalendarLabel) apiEventsCalendarLabel.textContent = langData.ui.apiEventsCalendar || 'گاه‌شمار رویدادهای API';
     
     if (apiEventsCalendarSelect) {
-        if (apiEventsCalendarSelect.options[0]) apiEventsCalendarSelect.options[0].text = langData.ui.bothCalendars || 'هر دو تقویم';
+        if (apiEventsCalendarSelect.options[0]) apiEventsCalendarSelect.options[0].text = langData.ui.bothCalendars || 'هر دو گاه‌شمار';
         if (apiEventsCalendarSelect.options[1]) apiEventsCalendarSelect.options[1].text = langData.ui.persian || 'فارسی';
         if (apiEventsCalendarSelect.options[2]) apiEventsCalendarSelect.options[2].text = langData.ui.gregorian || 'میلادی';
     }  
@@ -2653,7 +2653,7 @@ function updateFooterText() {
     // Update about section
     const aboutSection = footer.querySelector('.footer-about p');
     if (aboutSection) {
-        aboutSection.textContent = langData.ui.aboutDescription || 'تقویم روزگار - ابزاری کامل برای مدیریت زمان و رویدادها به دو زبان فارسی و انگلیسی';
+        aboutSection.textContent = langData.ui.aboutDescription || 'گاه‌شمار روزگار - ابزاری کامل برای مدیریت زمان و رویدادها به دو زبان فارسی و انگلیسی';
     }
 
     // Update section titles
@@ -2669,7 +2669,7 @@ function updateFooterText() {
     const usefulLinks = footer.querySelectorAll('.footer-column:nth-child(2) .footer-links li a');
     if (usefulLinks.length >= 2) {
         usefulLinks[0].textContent = langData.ui.roozegaar || 'روزگار';
-        usefulLinks[1].textContent = langData.ui.roozegaarCalendar || 'تقویم روزگار';
+        usefulLinks[1].textContent = langData.ui.roozegaarCalendar || 'گاه‌شمار روزگار';
     }
 
     // Update contact info labels
@@ -2697,7 +2697,7 @@ function updateFooterText() {
             // Convert to Jalali year for Persian
             const persianDate = gregorianToPersian(new Date());
             const jalaliYear = persianDate.year;
-            copyright.textContent = `${langData.ui.copyright || 'کلیه حقوق مادی و معنوی این سایت متعلق به تقویم روزگار می‌باشد'} © ${jalaliYear}`;
+            copyright.textContent = `${langData.ui.copyright || 'کلیه حقوق مادی و معنوی این سایت متعلق به گاه‌شمار روزگار می‌باشد'} © ${jalaliYear}`;
         } else {
             // Use Gregorian year for English
             copyright.textContent = `${langData.ui.copyright || 'All rights reserved for Roozegaar Calendar'} © ${currentYear}`;
@@ -3037,8 +3037,8 @@ function createApiEventsSection(eventsData, calendarTitle, rangeInfoText = '') {
     
     const calendarType = eventsData.calendar || 'persian';
     const calendarName = calendarType === 'persian' 
-        ? (currentLang === 'fa' ? 'تقویم فارسی' : 'Persian Calendar')
-        : (currentLang === 'fa' ? 'تقویم میلادی' : 'Gregorian Calendar');
+        ? (currentLang === 'fa' ? 'گاه‌شمار فارسی' : 'Persian Calendar')
+        : (currentLang === 'fa' ? 'گاه‌شمار میلادی' : 'Gregorian Calendar');
 
     const formattedCount = formatNumber(totalEvents, currentLang);
     const formattedFixed = formatNumber(fixedCount, currentLang);
@@ -3344,11 +3344,11 @@ function createApiEventsTabs() {
         let tabName = '';
         if (tabId === 'main') {
             tabName = currentLang === 'fa' ? 
-                (currentCalendar === 'persian' ? 'تقویم فارسی' : 'تقویم میلادی') :
+                (currentCalendar === 'persian' ? 'گاه‌شمار فارسی' : 'گاه‌شمار میلادی') :
                 (currentCalendar === 'persian' ? 'Persian Calendar' : 'Gregorian Calendar');
         } else {
             tabName = currentLang === 'fa' ?
-                (tabId === 'persian' ? 'تقویم فارسی' : 'تقویم میلادی') :
+                (tabId === 'persian' ? 'گاه‌شمار فارسی' : 'گاه‌شمار میلادی') :
                 (tabId === 'persian' ? 'Persian Calendar' : 'Gregorian Calendar');
         }
 
@@ -3464,7 +3464,7 @@ function displayTabEvents(tabId, eventsData) {
     // Determine which events to show based on tabId and apiEventsCalendar
     if (tabId === 'main') {
         eventsToShow = eventsData.main;
-        calendarTitle = currentLang === 'fa' ? 'رویدادهای تقویم اصلی' : 'Main Calendar Events';
+        calendarTitle = currentLang === 'fa' ? 'رویدادهای گاه‌شمار اصلی' : 'Main Calendar Events';
         isRangeData = false;
     } else if (tabId === 'persian') {
         // Show Persian events from either main or secondary based on which calendar is Persian
@@ -3484,7 +3484,7 @@ function displayTabEvents(tabId, eventsData) {
                     : `Date Range: ${start} to ${end}`;
             }
         }
-        calendarTitle = currentLang === 'fa' ? 'رویدادهای تقویم فارسی' : 'Persian Calendar Events';
+        calendarTitle = currentLang === 'fa' ? 'رویدادهای گاه‌شمار فارسی' : 'Persian Calendar Events';
     } else if (tabId === 'gregorian') {
         // Show Gregorian events from either main or secondary based on which calendar is Gregorian
         if (eventsData.main.calendar === 'gregorian') {
@@ -3503,7 +3503,7 @@ function displayTabEvents(tabId, eventsData) {
                     : `Date Range: ${start} to ${end}`;
             }
         }
-        calendarTitle = currentLang === 'fa' ? 'رویدادهای تقویم میلادی' : 'Gregorian Calendar Events';
+        calendarTitle = currentLang === 'fa' ? 'رویدادهای گاه‌شمار میلادی' : 'Gregorian Calendar Events';
     }
 
     if (eventsToShow && eventsToShow.success && eventsToShow.total_events > 0) {
@@ -3515,7 +3515,7 @@ function displayTabEvents(tabId, eventsData) {
         tabPane.innerHTML = `
             <div class="no-api-events" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
                 <i class="fas fa-calendar-times" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-                <p>${currentLang === 'fa' ? 'رویدادی در تقویم رسمی برای این بازه وجود ندارد' : 'There are no events in the official calendar for this period'}</p>
+                <p>${currentLang === 'fa' ? 'رویدادی در گاه‌شمار رسمی برای این بازه وجود ندارد' : 'There are no events in the official calendar for this period'}</p>
             </div>
         `;
     }
